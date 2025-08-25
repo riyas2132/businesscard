@@ -3,456 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Card Lookup</title>
+    <title>Order Details</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --accent: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --dark: #0f172a;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
-            --white: #ffffff;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            overflow-x: hidden;
-            padding: 2rem 1rem;
+            background-color: #f4f6f9;
         }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
+        .order-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .floating-shapes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
+        .order-header {
+            border-bottom: 2px solid #1976D2;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
         }
-
-        .shape {
-            position: absolute;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            opacity: 0.1;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        .shape:nth-child(1) { width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s; }
-        .shape:nth-child(2) { width: 60px; height: 60px; top: 20%; right: 20%; animation-delay: 5s; }
-        .shape:nth-child(3) { width: 80px; height: 80px; bottom: 20%; left: 15%; animation-delay: 10s; }
-        .shape:nth-child(4) { width: 120px; height: 120px; bottom: 10%; right: 10%; animation-delay: 15s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(120deg); }
-            66% { transform: translateY(15px) rotate(240deg); }
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 
-                0 32px 64px rgba(0, 0, 0, 0.1),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
-            padding: 3rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-            border-radius: 24px 24px 0 0;
-        }
-
-        .container:hover {
-            transform: translateY(-8px);
-            box-shadow: 
-                0 40px 80px rgba(0, 0, 0, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.3);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 2px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .subtitle {
-            color: var(--gray-600);
-            font-size: 1.1rem;
-            font-weight: 400;
-        }
-
-        .status-message {
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            font-weight: 500;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-            border-color: rgba(239, 68, 68, 0.2);
-        }
-
-        .success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            border-color: rgba(16, 185, 129, 0.2);
-        }
-
-        .form-grid {
-            display: grid;
-            gap: 2rem;
-        }
-
-        .form-group {
-            position: relative;
-        }
-
-        label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 0.75rem;
+        .order-status {
+            font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
-
-        .input-wrapper {
-            position: relative;
+        .status-pending {
+            color: orange;
         }
-
-        input[type="text"],
-        input[type="tel"] {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            border: 2px solid var(--gray-200);
-            border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 400;
-            color: var(--gray-800);
-            background: var(--white);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            outline: none;
+        .status-completed {
+            color: green;
         }
-
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 
-                0 0 0 4px rgba(99, 102, 241, 0.1),
-                0 8px 24px rgba(99, 102, 241, 0.15);
-            transform: translateY(-2px);
+        .status-cancelled {
+            color: red;
         }
-
-        input:not(:placeholder-shown) {
-            border-color: var(--success);
+        .status-delivered {
+            color: blue;
         }
-
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
+        #loading-overlay {
+            position: fixed;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s ease;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
-
-        .btn:hover::before {
-            left: 100%;
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
-            color: white;
-            box-shadow: 0 8px 24px rgba(71, 85, 105, 0.3);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(71, 85, 105, 0.4);
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-
-            .container {
-                padding: 2rem;
-                border-radius: 20px;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 1.5rem;
-                border-radius: 16px;
-            }
-
-            h1 {
-                font-size: 1.75rem;
-            }
-
-            input[type="text"],
-            input[type="tel"] {
-                padding: 0.875rem 1.25rem;
-                font-size: 0.875rem;
-            }
-        }
-
-        .form-group {
-            transition: transform 0.2s ease;
-        }
-
-        .form-group {
-            transition: transform 0.2s ease;
-        }
-
-        .form-group:hover,
-        .group-group:hover {
-            transform: translateX(4px);
-        }
-
-        input:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
+        .notes-section {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+    <div id="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 
     <div class="container">
-        <div class="header">
-            <h1>Business Card Lookup</h1>
-            <p class="subtitle">Access or share your business card</p>
-        </div>
-
-        <div id="status" class="status-message" style="display: none;"></div>
-
-        <form id="lookup-form">
-            <div class="form-grid">
-                <div class="group-group">
-                    <div class="form-group">
-                        <label for="cardId">Business Card ID</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="cardId" name="cardId" placeholder="Enter card ID (e.g., 10000)" required>
-                        </div>
-                    </div>
-                    <div class="button-group">
-                        <button type="submit" class="btn btn-primary">Edit Business Card</button> 
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="phoneNumber">Phone Number</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number (e.g., +1234567890)">
-                    </div>
-                    <div class="button-group">
-                        <button type="button" id="shareWhatsApp" class="btn btn-secondary">Share via WhatsApp</button>
-                    </div>
-                </div>
+        <div class="order-container">
+            <div class="order-header d-flex justify-content-between align-items-center">
+                <h2>Order Details</h2>
+                <div class="order-status" id="orderStatus"></div>
             </div>
-        </form>
+            
+            <div id="orderDetails">
+                <!-- Order details will be populated dynamically -->
+            </div>
+        </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // Handle form submission
-        document.getElementById('lookup-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const statusDiv = document.getElementById('status');
-            const cardId = document.getElementById('cardId').value.trim();
-
-            if (!cardId) {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = '❌ Error: Please enter a valid Card ID';
-                statusDiv.style.display = 'block';
-                setTimeout(() => {
-                    statusDiv.style.display = 'none';
-                }, 3000);
-                return;
-            }
-
-            window.location.href = `https://r-techlab.github.io/businesscard/update.html?id=${encodeURIComponent(cardId)}`;
-        });
-
-        // Handle WhatsApp sharing
-        document.getElementById('shareWhatsApp').addEventListener('click', function() {
-            const statusDiv = document.getElementById('status');
-            const cardId = document.getElementById('cardId').value.trim();
-            const phoneNumber = document.getElementById('phoneNumber').value.trim();
-
-            if (!cardId) {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = '❌ Error: Please enter a valid Card ID';
-                statusDiv.style.display = 'block';
-                setTimeout(() => {
-                    statusDiv.style.display = 'none';
-                }, 3000);
-                return;
-            }
-
-            if (!phoneNumber) {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = '❌ Error: enter a valid phone number';
-                statusDiv.style.display = 'block';
-                setTimeout(() => {
-                    statusDiv.style.display = 'none';
-                }, 3000);
-                return;
-            }
-
-            const shareUrl = `https://r-techlab.github.io/businesscard/update.html?id=${encodeURIComponent(cardId)}`;
-            const whatsappUrl = `https://wa.me/${encodeURIComponent(phoneNumber)}?text=${encodeURIComponent(shareUrl)}`;
-            window.open(whatsappUrl, '_blank');
-        });
-
-        // Input validation feedback
-        const inputs = document.querySelectorAll('input[type="text"], input[type="tel"]');
-        
-        inputs.forEach(input => {
-            input.addEventListener('blur', function() {
-                if (this.value.trim() !== '') {
-                    this.style.borderColor = 'var(--success)';
-                } else if (this.required) {
-                    this.style.borderColor = 'var(--error)';
-                } else {
-                    this.style.borderColor = 'var(--gray-200)';
-                }
-            });
-
-            input.addEventListener('focus', function() {
-                this.style.borderColor = 'var(--primary)';
-            });
-        });
+function _0x307e(_0x2bfeae,_0x3cec0f){const _0xcbaed6=_0xcbae();return _0x307e=function(_0x307e29,_0x12f20a){_0x307e29=_0x307e29-0xf1;let _0x71a8bd=_0xcbaed6[_0x307e29];return _0x71a8bd;},_0x307e(_0x2bfeae,_0x3cec0f);}const _0x4f28fa=_0x307e;(function(_0x5c0e6f,_0xc0b84b){const _0x1baffe=_0x307e,_0x5b37d5=_0x5c0e6f();while(!![]){try{const _0x4a6d48=parseInt(_0x1baffe(0x102))/0x1+parseInt(_0x1baffe(0x11e))/0x2*(parseInt(_0x1baffe(0x10a))/0x3)+-parseInt(_0x1baffe(0x104))/0x4*(-parseInt(_0x1baffe(0x10d))/0x5)+parseInt(_0x1baffe(0x124))/0x6+parseInt(_0x1baffe(0x10c))/0x7+parseInt(_0x1baffe(0x112))/0x8+-parseInt(_0x1baffe(0x121))/0x9;if(_0x4a6d48===_0xc0b84b)break;else _0x5b37d5['push'](_0x5b37d5['shift']());}catch(_0x1e9ecc){_0x5b37d5['push'](_0x5b37d5['shift']());}}}(_0xcbae,0xc243b));const DEFAULT_ORDER_NUMBER='',XXX=_0x4f28fa(0x131),YYY=_0x4f28fa(0xf7),ZZZ=_0x4f28fa(0x113);function showLoading(){const _0x301546=_0x4f28fa;document[_0x301546(0x117)](_0x301546(0xf1))[_0x301546(0x116)][_0x301546(0x120)]=_0x301546(0xfa);}function hideLoading(){const _0x462d43=_0x4f28fa;document[_0x462d43(0x117)](_0x462d43(0xf1))[_0x462d43(0x116)][_0x462d43(0x120)]='none';}function initClient(){const _0xe6df82=_0x4f28fa;showLoading(),gapi[_0xe6df82(0xf3)][_0xe6df82(0x115)]({'apiKey':XXX,'discoveryDocs':[_0xe6df82(0x134)]})[_0xe6df82(0x11f)](function(){const _0x4920a1=_0xe6df82,_0x11fdba=new URLSearchParams(window[_0x4920a1(0x12f)][_0x4920a1(0x127)]),_0x4dc539=_0x11fdba[_0x4920a1(0x100)](_0x4920a1(0x132))||DEFAULT_ORDER_NUMBER;fetchOrderDetails(_0x4dc539);},function(_0x12dbcb){const _0x57a772=_0xe6df82;console[_0x57a772(0x119)](_0x57a772(0x12b),_0x12dbcb),displayError(_0x57a772(0x126)),hideLoading();});}function _0xcbae(){const _0x5e7201=['No\x20notes\x20available','Order\x20not\x20found','status-pending','3VeRFVx','classList','3596677dZEvvO','410qVmrkd','completed','innerHTML','Failed\x20to\x20retrieve\x20order\x20details','spreadsheets','325936dJPaMo','Orders!A:Z','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Email:</strong>\x20','init','style','getElementById','length','error','status-completed','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Address:</strong>\x20','delivered','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Order\x20Number:</strong>\x20','1785318vvuasj','then','display','29687202KKPYZZ','Error:\x20','orderDetails','6660084bORVJq','sheets','Failed\x20to\x20initialize\x20Google\x20Sheets\x20API','search','Address','cancelled','OrderNumber','Error\x20initializing\x20GAPI\x20client:','forEach','message','text-muted','location','add','AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs','order','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Name:</strong>\x20','https://sheets.googleapis.com/$discovery/rest?version=v4','loading-overlay','values','client','Name','N/A','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','1jEm8NKXiqlKDhpzb7RXQElASiLo4AgMF8kFsZkbLcnM','orderStatus','textContent','flex','</pre>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-12\x20notes-section\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4>Notes</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Phone:</strong>\x20','pending','No\x20order\x20details\x20available','status-delivered','get','Order','868267YuEwIx','result','32624gCxeJP','Email','load'];_0xcbae=function(){return _0x5e7201;};return _0xcbae();}function fetchOrderDetails(_0x37bdd3){const _0x1813d5=_0x4f28fa;gapi[_0x1813d5(0xf3)][_0x1813d5(0x125)][_0x1813d5(0x111)][_0x1813d5(0xf2)]['get']({'spreadsheetId':YYY,'range':ZZZ})[_0x1813d5(0x11f)](function(_0x3c9d1e){const _0xa582a1=_0x1813d5,_0x4a2936=_0x3c9d1e[_0xa582a1(0x103)][_0xa582a1(0xf2)],_0x197d24=_0x4a2936[0x0],_0x5c5b5d=findOrderByNumber(_0x4a2936,_0x37bdd3);_0x5c5b5d?renderOrderDetails(_0x197d24,_0x5c5b5d):displayError(_0xa582a1(0x108)),hideLoading();},function(_0xeb9b61){const _0x3d7055=_0x1813d5;console[_0x3d7055(0x119)](_0x3d7055(0x122)+_0xeb9b61['result'][_0x3d7055(0x119)][_0x3d7055(0x12d)]),displayError(_0x3d7055(0x110)),hideLoading();});}function findOrderByNumber(_0x52cbc2,_0xe209ef){const _0x484289=_0x4f28fa,_0x4f793c=_0x52cbc2[0x0]['indexOf'](_0x484289(0x12a));for(let _0x21417c=0x1;_0x21417c<_0x52cbc2[_0x484289(0x118)];_0x21417c++){if(_0x52cbc2[_0x21417c]&&_0x52cbc2[_0x21417c][_0x4f793c]===_0xe209ef)return _0x52cbc2[_0x21417c];}return null;}function renderOrderDetails(_0x1acbec,_0x533338){const _0x478c48=_0x4f28fa,_0x4772c=document[_0x478c48(0x117)]('orderDetails'),_0x99c707=document[_0x478c48(0x117)](_0x478c48(0xf8)),_0x440705={};_0x1acbec[_0x478c48(0x12c)]((_0x2cc2d4,_0x4b2adc)=>{const _0x329372=_0x478c48;_0x440705[_0x2cc2d4]=_0x533338[_0x4b2adc]||_0x329372(0xf5);});const _0x851f86=_0x440705['Status']||'Unknown';_0x99c707[_0x478c48(0xf9)]=_0x851f86;switch(_0x851f86['toLowerCase']()){case _0x478c48(0xfd):_0x99c707[_0x478c48(0x10b)][_0x478c48(0x130)](_0x478c48(0x109));break;case _0x478c48(0x10e):_0x99c707[_0x478c48(0x10b)][_0x478c48(0x130)](_0x478c48(0x11a));break;case _0x478c48(0x129):_0x99c707[_0x478c48(0x10b)][_0x478c48(0x130)]('status-cancelled');break;case _0x478c48(0x11c):_0x99c707['classList'][_0x478c48(0x130)](_0x478c48(0xff));break;default:_0x99c707[_0x478c48(0x10b)]['add'](_0x478c48(0x12e));}_0x4772c[_0x478c48(0x10f)]=_0x478c48(0x11d)+_0x440705[_0x478c48(0x12a)]+_0x478c48(0x133)+_0x440705[_0x478c48(0xf4)]+_0x478c48(0xfc)+_0x440705['Phone']+_0x478c48(0x114)+_0x440705[_0x478c48(0x105)]+_0x478c48(0x11b)+_0x440705[_0x478c48(0x128)]+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-12\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4>Order\x20Items</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<pre>'+(_0x440705[_0x478c48(0x101)]||_0x478c48(0xfe))+_0x478c48(0xfb)+(_0x440705['Notes']||_0x478c48(0x107))+_0x478c48(0xf6);}function displayError(_0xa50f4a){const _0x3d3fe8=_0x4f28fa,_0x46300f=document[_0x3d3fe8(0x117)](_0x3d3fe8(0x123));_0x46300f[_0x3d3fe8(0x10f)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22alert\x20alert-danger\x22\x20role=\x22alert\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0xa50f4a+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20';}gapi[_0x4f28fa(0x106)](_0x4f28fa(0xf3),initClient);
     </script>
 </body>
 </html>
