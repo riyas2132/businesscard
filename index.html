@@ -289,7 +289,7 @@ function hideLoading() {
         // Replace with your Google Sheet ID
         const YYY = '1jZeFmgnQtui6KjhlyrjH5c8VZOtb4vBztMmD8phtF10';
         // Replace with your sheet name and extend the range to include columns R and S
-        const ZZZ = 'Products!A:S';
+        const ZZZ = 'Products!A:Z';
 
         let cart = {};
         let products = [];
@@ -321,6 +321,9 @@ function hideLoading() {
 
 
 function loadSheetsData() {
+
+	
+
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: YYY,
         range: ZZZ
@@ -371,6 +374,9 @@ function loadSheetsData() {
                 [primaryColor, secondaryColor, accentColor] = row[18].split(',');
                 updateColors(primaryColor, secondaryColor, accentColor);
             }
+			if (row[21] && row[22]) {
+				promoCodes[row[21].trim()] = parseFloat(row[22]); // save code with discount %
+			}
             updateShopEmailPhone();
             updateSocialMedia(Facebook, Twitter, Instagram, Linkedin);
         }
@@ -402,6 +408,8 @@ function loadSheetsData() {
         console.error('Error: ' + response.result.error.message);
         hideLoading(); // Hide loading animation in case of error
     });
+	
+	
 }
 
 
@@ -623,8 +631,23 @@ function showCartModal() {
 
     for (const [index, quantity] of Object.entries(cart)) {
         const product = products[index];
+
+        // Promo input (keep only one input at the top, not for every product)
+        if (index == 0) {
+            cartContent += `
+                <li class="list-group-item">
+                    <div class="input-group">
+                        <input type="text" id="promoCodeInput" class="form-control" placeholder="Enter promo code">
+                        <button class="btn btn-outline-secondary" type="button" onclick="applyPromoCode()">Apply</button>
+                    </div>
+                    <div id="promoMessage" class="text-success mt-2"></div>
+                </li>
+            `;
+        }
+
         const itemTotal = product.price * quantity;
         total += itemTotal;
+
         cartContent += 
             `<li class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
@@ -638,10 +661,24 @@ function showCartModal() {
             </li>`;
     }
 
-    cartContent += 
-        `<li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+    // ✅ Discount row with fixed ID
+    let discountAmount = 0;
+    if (typeof discountValue !== "undefined" && discountValue > 0) {
+        discountAmount = (total * discountValue) / 100;
+    }
+
+    cartContent += `
+        <li class="list-group-item d-flex justify-content-between align-items-center text-success" id="discount-row">
+            ${discountValue > 0 ? `Discount (${discountValue}%): - ${Currency} ${discountAmount.toFixed(2)}` : ''}
+        </li>
+    `;
+
+    // ✅ Final grand total
+    let grandTotal = total - discountAmount;
+    cartContent += `
+        <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
             Total
-            <span id="modal-grand-total">${Currency} ${total.toFixed(2)}</span>
+            <span id="modal-grand-total">${Currency} ${grandTotal.toFixed(2)}</span>
         </li>
     </ul>`;
 
@@ -649,6 +686,36 @@ function showCartModal() {
 
     const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
     cartModal.show();
+}
+
+
+
+function updateCartModalTotals() {
+    let total = 0;
+
+    for (const [index, quantity] of Object.entries(cart)) {
+        const product = products[index];
+        total += product.price * quantity;
+    }
+
+    let discountAmount = 0;
+    if (discountValue > 0) {
+        discountAmount = (total * discountValue) / 100;
+    }
+
+    const grandTotal = total - discountAmount;
+
+    // Update only the grand total element
+    const modalGrandTotal = document.getElementById('modal-grand-total');
+    if (modalGrandTotal) {
+        modalGrandTotal.textContent = `${Currency} ${grandTotal.toFixed(2)}`;
+    }
+
+    // Update discount row if exists
+    const discountRow = document.getElementById('discount-row');
+    if (discountRow) {
+        discountRow.innerHTML = discountValue > 0 ? `Discount (${discountValue}%): - ${Currency} ${discountAmount.toFixed(2)}` : '';
+    }
 }
 
         function searchProducts() {
@@ -701,6 +768,7 @@ function setOrderButtonState(isLoading) {
 }
 
 // Replace the existing proceedToWhatsApp onclick handler with this:
+
 document.getElementById('proceedToWhatsApp').onclick = async function () {
     // Validate required fields
     const name = document.getElementById('nameInput').value.trim();
@@ -708,28 +776,13 @@ document.getElementById('proceedToWhatsApp').onclick = async function () {
     const email = document.getElementById('emailInput').value.trim();
     const address = document.getElementById('addressInput').value.trim();
 
-    // Basic validation
-    if (!name) {
-        alert('Please enter your name');
-        return;
-    }
-    if (!phone) {
-        alert('Please enter your phone number');
-        return;
-    }
-    if (!email) {
-        alert('Please enter your email address');
-        return;
-    }
-    if (!address) {
-        alert('Please enter your address');
-        return;
-    }
+    if (!name) { alert('Please enter your name'); return; }
+    if (!phone) { alert('Please enter your phone number'); return; }
+    if (!email) { alert('Please enter your email address'); return; }
+    if (!address) { alert('Please enter your address'); return; }
 
-    // Show loading state
     setOrderButtonState(true);
 
-    // Generate order number
     const orderNumber = generateOrderNumber();
 
     let formData = new FormData();
@@ -740,10 +793,11 @@ document.getElementById('proceedToWhatsApp').onclick = async function () {
     formData.append('Address', address);
     formData.append('formGoogleSendEmail', shopEmail);
 
-    // Add order details
+    // Build order details
     let orderDetails = `Order Number: ${orderNumber}\n\nOrder Details:\n`;
     let total = 0;
     let orderItems = [];
+
     for (const [index, quantity] of Object.entries(cart)) {
         const product = products[index];
         const itemTotal = product.price * quantity;
@@ -751,13 +805,22 @@ document.getElementById('proceedToWhatsApp').onclick = async function () {
         orderDetails += `${quantity}x ${product.code} - ${Currency} ${product.price.toFixed(2)} each = ${Currency} ${itemTotal.toFixed(2)}\n`;
         orderItems.push(`${quantity}x ${product.code}`);
     }
-    orderDetails += `\nTotal: ${Currency} ${total.toFixed(2)}`;
+
+    // ✅ Apply discount if promo code exists
+    let discountAmount = 0;
+    if (discountValue > 0) {
+        discountAmount = (total * discountValue) / 100;
+        orderDetails += `\nDiscount Applied (${discountValue}%): - ${Currency} ${discountAmount.toFixed(2)}`;
+    }
+
+    let grandTotal = total - discountAmount;
+    orderDetails += `\nTotal: ${Currency} ${grandTotal.toFixed(2)}`;
+
     formData.append('Order', orderDetails);
     formData.append('Status', 'Pending');
     formData.append('OrderStatusLink', `${OrderDetailsURL}${orderNumber}`);
 
     try {
-        // Send to Google Apps Script
         const response = await fetch('https://script.google.com/macros/s/AKfycby5Rva2J19oKMi35L82ZPQq1WqO_3dxiTRE94BWIatNPVkEX-PTlBpsCCf0XbPmK7eh5Q/exec', {
             method: 'POST',
             body: formData
@@ -766,27 +829,23 @@ document.getElementById('proceedToWhatsApp').onclick = async function () {
         const data = await response.json();
         
         if (data.result === 'success') {
-            // Construct WhatsApp message
-            const message = `Order Number: ${orderNumber}\n\nOrder Details:
+            const message = `Order Number: ${orderNumber}\n\nCustomer Info:
                 Name: ${name}
                 Phone: ${phone}
                 Email: ${email}
                 ${address ? `Address: ${address}\n` : ''}
-                ${orderDetails}
-                
-                Shipment Status: ${OrderDetailsURL}${orderNumber}
+
+${orderDetails}
+
+Shipment Status: ${OrderDetailsURL}${orderNumber}
             `;
             const encodedMessage = encodeURIComponent(message);
             const whatsappLink = `https://wa.me/${Phone}?text=${encodedMessage}`;
             
-            // Reset button state before opening WhatsApp
             setOrderButtonState(false);
-            
-            // Open WhatsApp and clear cart
             window.open(whatsappLink, '_blank');
             clearCart();
-            
-            // Close the modal
+
             const cartModal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
             if (cartModal) {
                 cartModal.hide();
@@ -800,6 +859,37 @@ document.getElementById('proceedToWhatsApp').onclick = async function () {
         setOrderButtonState(false);
     }
 };
+
+
+ 
+
+// Global variables
+let promoCodes = {};   // already filled in loadSheetsData
+let discountValue = 0; // % discount applied
+let appliedPromo = ""; // store applied code
+
+function applyPromoCode() {
+    const input = document.getElementById('promoCodeInput');
+    const messageDiv = document.getElementById('promoMessage');
+    const code = input.value.trim();
+
+    if (promoCodes[code]) {
+        discountValue = promoCodes[code];
+        appliedPromo = code;
+        messageDiv.textContent = `Promo code "${code}" applied! You got ${discountValue}% off.`;
+        messageDiv.className = "text-success mt-2";
+    } else {
+        discountValue = 0;
+        appliedPromo = "";
+        messageDiv.textContent = `Invalid promo code.`;
+        messageDiv.className = "text-danger mt-2";
+    }
+
+    // Refresh totals in modal
+    updateCartModalTotals();
+}
+
+
 
 
         gapi.load('client', initClient);
