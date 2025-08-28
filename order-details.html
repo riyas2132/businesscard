@@ -6,82 +6,353 @@
     <title>Order Details</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #f4f6f9;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
         }
+
         .order-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .order-header {
-            border-bottom: 2px solid #1976D2;
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            color: white;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
         }
+
+        .order-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .order-header h2 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
         .order-status {
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 1.1rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+            padding: 8px 16px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
+
         .status-pending {
-            color: orange;
+            background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+            color: white !important;
         }
+
         .status-completed {
-            color: green;
+            background: linear-gradient(135deg, #4caf50, #388e3c) !important;
+            color: white !important;
         }
+
         .status-cancelled {
-            color: red;
+            background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+            color: white !important;
         }
+
         .status-delivered {
-            color: blue;
+            background: linear-gradient(135deg, #2196f3, #1976d2) !important;
+            color: white !important;
         }
+
+        .order-content {
+            padding: 2.5rem;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .info-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .order-items-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .order-items-pre {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #495057;
+            margin: 0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .notes-section {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            margin-top: 1.5rem;
+        }
+
+        .notes-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #444;
+            margin: 0;
+        }
+
         #loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            backdrop-filter: blur(10px);
         }
-        .spinner-border {
-            width: 3rem;
-            height: 3rem;
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
         }
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .notes-section {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border-radius: 5px;
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .alert-modern {
+            border: none;
+            border-radius: 15px;
+            padding: 2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .alert-modern .alert-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-number-highlight {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .order-container {
+                margin: 1rem;
+                border-radius: 15px;
+            }
+
+            .order-header {
+                padding: 1.5rem;
+            }
+
+            .order-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .order-content {
+                padding: 1.5rem;
+            }
+
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .info-icon {
+                margin-bottom: 0.5rem;
+                margin-right: 0;
+            }
         }
     </style>
 </head>
 <body>
     <div id="loading-overlay">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading order details...</div>
     </div>
 
     <div class="container">
         <div class="order-container">
             <div class="order-header d-flex justify-content-between align-items-center">
-                <h2>Order Details</h2>
+                <h2><i class="fas fa-receipt me-3"></i>Order Details</h2>
                 <div class="order-status" id="orderStatus"></div>
             </div>
             
-            <div id="orderDetails">
+            <div class="order-content" id="orderDetails">
                 <!-- Order details will be populated dynamically -->
             </div>
         </div>
@@ -91,7 +362,200 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-function _0x307e(_0x2bfeae,_0x3cec0f){const _0xcbaed6=_0xcbae();return _0x307e=function(_0x307e29,_0x12f20a){_0x307e29=_0x307e29-0xf1;let _0x71a8bd=_0xcbaed6[_0x307e29];return _0x71a8bd;},_0x307e(_0x2bfeae,_0x3cec0f);}const _0x4f28fa=_0x307e;(function(_0x5c0e6f,_0xc0b84b){const _0x1baffe=_0x307e,_0x5b37d5=_0x5c0e6f();while(!![]){try{const _0x4a6d48=parseInt(_0x1baffe(0x102))/0x1+parseInt(_0x1baffe(0x11e))/0x2*(parseInt(_0x1baffe(0x10a))/0x3)+-parseInt(_0x1baffe(0x104))/0x4*(-parseInt(_0x1baffe(0x10d))/0x5)+parseInt(_0x1baffe(0x124))/0x6+parseInt(_0x1baffe(0x10c))/0x7+parseInt(_0x1baffe(0x112))/0x8+-parseInt(_0x1baffe(0x121))/0x9;if(_0x4a6d48===_0xc0b84b)break;else _0x5b37d5['push'](_0x5b37d5['shift']());}catch(_0x1e9ecc){_0x5b37d5['push'](_0x5b37d5['shift']());}}}(_0xcbae,0xc243b));const DEFAULT_ORDER_NUMBER='',XXX=_0x4f28fa(0x131),YYY=_0x4f28fa(0xf7),ZZZ=_0x4f28fa(0x113);function showLoading(){const _0x301546=_0x4f28fa;document[_0x301546(0x117)](_0x301546(0xf1))[_0x301546(0x116)][_0x301546(0x120)]=_0x301546(0xfa);}function hideLoading(){const _0x462d43=_0x4f28fa;document[_0x462d43(0x117)](_0x462d43(0xf1))[_0x462d43(0x116)][_0x462d43(0x120)]='none';}function initClient(){const _0xe6df82=_0x4f28fa;showLoading(),gapi[_0xe6df82(0xf3)][_0xe6df82(0x115)]({'apiKey':XXX,'discoveryDocs':[_0xe6df82(0x134)]})[_0xe6df82(0x11f)](function(){const _0x4920a1=_0xe6df82,_0x11fdba=new URLSearchParams(window[_0x4920a1(0x12f)][_0x4920a1(0x127)]),_0x4dc539=_0x11fdba[_0x4920a1(0x100)](_0x4920a1(0x132))||DEFAULT_ORDER_NUMBER;fetchOrderDetails(_0x4dc539);},function(_0x12dbcb){const _0x57a772=_0xe6df82;console[_0x57a772(0x119)](_0x57a772(0x12b),_0x12dbcb),displayError(_0x57a772(0x126)),hideLoading();});}function _0xcbae(){const _0x5e7201=['No\x20notes\x20available','Order\x20not\x20found','status-pending','3VeRFVx','classList','3596677dZEvvO','410qVmrkd','completed','innerHTML','Failed\x20to\x20retrieve\x20order\x20details','spreadsheets','325936dJPaMo','Orders!A:Z','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Email:</strong>\x20','init','style','getElementById','length','error','status-completed','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Address:</strong>\x20','delivered','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Order\x20Number:</strong>\x20','1785318vvuasj','then','display','29687202KKPYZZ','Error:\x20','orderDetails','6660084bORVJq','sheets','Failed\x20to\x20initialize\x20Google\x20Sheets\x20API','search','Address','cancelled','OrderNumber','Error\x20initializing\x20GAPI\x20client:','forEach','message','text-muted','location','add','AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs','order','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Name:</strong>\x20','https://sheets.googleapis.com/$discovery/rest?version=v4','loading-overlay','values','client','Name','N/A','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','1jEm8NKXiqlKDhpzb7RXQElASiLo4AgMF8kFsZkbLcnM','orderStatus','textContent','flex','</pre>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-12\x20notes-section\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4>Notes</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-md-6\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<strong>Phone:</strong>\x20','pending','No\x20order\x20details\x20available','status-delivered','get','Order','868267YuEwIx','result','32624gCxeJP','Email','load'];_0xcbae=function(){return _0x5e7201;};return _0xcbae();}function fetchOrderDetails(_0x37bdd3){const _0x1813d5=_0x4f28fa;gapi[_0x1813d5(0xf3)][_0x1813d5(0x125)][_0x1813d5(0x111)][_0x1813d5(0xf2)]['get']({'spreadsheetId':YYY,'range':ZZZ})[_0x1813d5(0x11f)](function(_0x3c9d1e){const _0xa582a1=_0x1813d5,_0x4a2936=_0x3c9d1e[_0xa582a1(0x103)][_0xa582a1(0xf2)],_0x197d24=_0x4a2936[0x0],_0x5c5b5d=findOrderByNumber(_0x4a2936,_0x37bdd3);_0x5c5b5d?renderOrderDetails(_0x197d24,_0x5c5b5d):displayError(_0xa582a1(0x108)),hideLoading();},function(_0xeb9b61){const _0x3d7055=_0x1813d5;console[_0x3d7055(0x119)](_0x3d7055(0x122)+_0xeb9b61['result'][_0x3d7055(0x119)][_0x3d7055(0x12d)]),displayError(_0x3d7055(0x110)),hideLoading();});}function findOrderByNumber(_0x52cbc2,_0xe209ef){const _0x484289=_0x4f28fa,_0x4f793c=_0x52cbc2[0x0]['indexOf'](_0x484289(0x12a));for(let _0x21417c=0x1;_0x21417c<_0x52cbc2[_0x484289(0x118)];_0x21417c++){if(_0x52cbc2[_0x21417c]&&_0x52cbc2[_0x21417c][_0x4f793c]===_0xe209ef)return _0x52cbc2[_0x21417c];}return null;}function renderOrderDetails(_0x1acbec,_0x533338){const _0x478c48=_0x4f28fa,_0x4772c=document[_0x478c48(0x117)]('orderDetails'),_0x99c707=document[_0x478c48(0x117)](_0x478c48(0xf8)),_0x440705={};_0x1acbec[_0x478c48(0x12c)]((_0x2cc2d4,_0x4b2adc)=>{const _0x329372=_0x478c48;_0x440705[_0x2cc2d4]=_0x533338[_0x4b2adc]||_0x329372(0xf5);});const _0x851f86=_0x440705['Status']||'Unknown';_0x99c707[_0x478c48(0xf9)]=_0x851f86;switch(_0x851f86['toLowerCase']()){case _0x478c48(0xfd):_0x99c707[_0x478c48(0x10b)][_0x478c48(0x130)](_0x478c48(0x109));break;case _0x478c48(0x10e):_0x99c707[_0x478c48(0x10b)][_0x478c48(0x130)](_0x478c48(0x11a));break;case _0x478c48(0x129):_0x99c707[_0x478c48(0x10b)][_0x478c48(0x130)]('status-cancelled');break;case _0x478c48(0x11c):_0x99c707['classList'][_0x478c48(0x130)](_0x478c48(0xff));break;default:_0x99c707[_0x478c48(0x10b)]['add'](_0x478c48(0x12e));}_0x4772c[_0x478c48(0x10f)]=_0x478c48(0x11d)+_0x440705[_0x478c48(0x12a)]+_0x478c48(0x133)+_0x440705[_0x478c48(0xf4)]+_0x478c48(0xfc)+_0x440705['Phone']+_0x478c48(0x114)+_0x440705[_0x478c48(0x105)]+_0x478c48(0x11b)+_0x440705[_0x478c48(0x128)]+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22col-12\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4>Order\x20Items</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<pre>'+(_0x440705[_0x478c48(0x101)]||_0x478c48(0xfe))+_0x478c48(0xfb)+(_0x440705['Notes']||_0x478c48(0x107))+_0x478c48(0xf6);}function displayError(_0xa50f4a){const _0x3d3fe8=_0x4f28fa,_0x46300f=document[_0x3d3fe8(0x117)](_0x3d3fe8(0x123));_0x46300f[_0x3d3fe8(0x10f)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22alert\x20alert-danger\x22\x20role=\x22alert\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0xa50f4a+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20';}gapi[_0x4f28fa(0x106)](_0x4f28fa(0xf3),initClient);
+        // Default order number
+        const DEFAULT_ORDER_NUMBER = 'ORD-250828-170411';
+
+        // Replace with your Google Sheets API key
+        const XXX = 'AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs';
+        // Replace with your Google Sheet ID
+        const YYY = '1jZeFmgnQtui6KjhlyrjH5c8VZOtb4vBztMmD8phtF10';
+        // Sheet name for orders
+        const ZZZ = 'Orders!A:Z';
+
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+
+        function initClient() {
+            showLoading();
+            gapi.client.init({
+                'apiKey': XXX,
+                'discoveryDocs': ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            }).then(function () {
+                // Get order number from URL, use default if not provided
+                const urlParams = new URLSearchParams(window.location.search);
+                const orderNumber = urlParams.get('order') || DEFAULT_ORDER_NUMBER;
+                
+                fetchOrderDetails(orderNumber);
+            }, function (error) {
+                console.error('Error initializing GAPI client:', error);
+                displayError('Failed to initialize Google Sheets API');
+                hideLoading();
+            });
+        }
+
+        function fetchOrderDetails(orderNumber) {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: YYY,
+                range: ZZZ
+            }).then(function (response) {
+                const data = response.result.values;
+                const headers = data[0];
+                const orderDetails = findOrderByNumber(data, orderNumber);
+
+                if (orderDetails) {
+                    renderOrderDetails(headers, orderDetails);
+                } else {
+                    displayError('Order not found');
+                }
+                hideLoading();
+            }, function (response) {
+                console.error('Error: ' + response.result.error.message);
+                displayError('Failed to retrieve order details');
+                hideLoading();
+            });
+        }
+
+        function findOrderByNumber(data, orderNumber) {
+            const orderNumberIndex = data[0].indexOf('OrderNumber');
+            for (let i = 1; i < data.length; i++) {
+                if (data[i] && data[i][orderNumberIndex] === orderNumber) {
+                    return data[i];
+                }
+            }
+            return null;
+        }
+
+        function renderOrderDetails(headers, orderDetails) {
+            const orderDetailsContainer = document.getElementById('orderDetails');
+            const orderStatusElement = document.getElementById('orderStatus');
+
+            // Create an object mapping headers to values for easier access
+            const orderMap = {};
+            headers.forEach((header, index) => {
+                orderMap[header] = orderDetails[index] || 'N/A';
+            });
+
+            // Set order status
+            const status = orderMap['Status'] || 'Unknown';
+            orderStatusElement.textContent = status;
+
+            // Assign status class
+            switch (status.toLowerCase()) {
+                case 'pending':
+                    orderStatusElement.classList.add('status-pending');
+                    break;
+                case 'completed':
+                    orderStatusElement.classList.add('status-completed');
+                    break;
+                case 'cancelled':
+                    orderStatusElement.classList.add('status-cancelled');
+                    break;
+                case 'delivered':
+                    orderStatusElement.classList.add('status-delivered');
+                    break;
+                default:
+                    orderStatusElement.classList.add('text-muted');
+            }
+
+            // Generate HTML for order details
+            orderDetailsContainer.innerHTML = `
+                <div class="info-card">
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Order Number</div>
+                            <div class="info-value order-number-highlight">${orderMap['OrderNumber']}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-row">
+                                <div class="info-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Customer Name</div>
+                                    <div class="info-value">${orderMap['Name']}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-row">
+                                <div class="info-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Phone Number</div>
+                                    <div class="info-value">${orderMap['Phone']}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-row">
+                                <div class="info-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Email Address</div>
+                                    <div class="info-value">${orderMap['Email']}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-row">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Delivery Address</div>
+                                    <div class="info-value">${orderMap['Address']}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h4 class="section-title"><i class="fas fa-shopping-cart me-2"></i>Order Items</h4>
+                    <div class="order-items-container">
+                        <pre class="order-items-pre">${orderMap['Order'] || 'No order details available'}</pre>
+                    </div>
+                </div>
+
+                <div class="notes-section">
+                    <h4 class="section-title"><i class="fas fa-sticky-note me-2"></i>Additional Notes</h4>
+                    <p class="notes-content">${orderMap['Notes'] || 'No additional notes provided'}</p>
+                </div>
+            `;
+        }
+
+        function displayError(message) {
+            const orderDetailsContainer = document.getElementById('orderDetails');
+            orderDetailsContainer.innerHTML = `
+                <div class="alert alert-modern text-center" role="alert">
+                    <div class="alert-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h4>Oops! Something went wrong</h4>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Load the Google Sheets API
+        gapi.load('client', initClient);
     </script>
 </body>
 </html>
