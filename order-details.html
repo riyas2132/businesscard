@@ -6,64 +6,295 @@
     <title>Order Details</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <style>
+        :root {
+            --primary-color: #1976D2;
+            --secondary-color: #E3F2FD;
+            --accent-color: #FFFFFF;
+        }
+        
         body {
             background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
         .order-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
             background-color: white;
             padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
+        
         .order-header {
-            border-bottom: 2px solid #1976D2;
+            border-bottom: 2px solid var(--primary-color);
             padding-bottom: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
+        
         .order-status {
             font-weight: bold;
             text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
         }
+        
         .status-pending {
-            color: orange;
+            background-color: #fff3cd;
+            color: #856404;
         }
+        
         .status-completed {
-            color: green;
+            background-color: #d4edda;
+            color: #155724;
         }
+        
         .status-cancelled {
-            color: red;
+            background-color: #f8d7da;
+            color: #721c24;
         }
+        
         .status-delivered {
-            color: blue;
+            background-color: #cce5ff;
+            color: #004085;
         }
+        
+        .status-processing {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
         #loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(255, 255, 255, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            flex-direction: column;
         }
+        
         .spinner-border {
             width: 3rem;
             height: 3rem;
+            color: var(--primary-color);
         }
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        
+        .loading-text {
+            margin-top: 1rem;
+            color: var(--primary-color);
+            font-weight: 500;
         }
+        
+        .order-info-card {
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .order-info-header {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .order-info-body {
+            padding: 1.5rem;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            min-width: 120px;
+            color: #555;
+        }
+        
+        .info-value {
+            flex: 1;
+        }
+        
+        .order-items {
+            margin-top: 1.5rem;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-name {
+            flex: 2;
+        }
+        
+        .item-quantity, .item-price, .item-total {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .order-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+        
+        .summary-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-top: 2px solid #ddd;
+            margin-top: 0.5rem;
+            padding-top: 0.8rem;
+        }
+        
         .notes-section {
             margin-top: 1.5rem;
-            padding: 1rem;
+            padding: 1.5rem;
             background-color: #f8f9fa;
-            border-radius: 5px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .order-not-found {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .order-not-found i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: 3px solid white;
+        }
+        
+        .timeline-content {
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border-radius: 6px;
+        }
+        
+        .timeline-date {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .order-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                margin-bottom: 1rem;
+            }
+            
+            .info-label {
+                margin-bottom: 0.3rem;
+            }
+            
+            .order-item {
+                flex-direction: column;
+            }
+            
+            .item-quantity, .item-price, .item-total {
+                text-align: left;
+                margin-top: 0.3rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -72,17 +303,18 @@
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
+        <div class="loading-text">Loading order details...</div>
     </div>
 
-    <div class="container">
+    <div class="container py-4">
         <div class="order-container">
-            <div class="order-header d-flex justify-content-between align-items-center">
-                <h2>Order Details</h2>
-                <div class="order-status" id="orderStatus"></div>
+            <div class="order-header">
+                <h2><i class="bi bi-receipt"></i> Order Details</h2>
+                <div class="order-status" id="orderStatus">Loading...</div>
             </div>
             
-            <div id="orderDetails">
-                <!-- Order details will be populated dynamically -->
+            <div id="orderContent">
+                <!-- Order content will be populated dynamically -->
             </div>
         </div>
     </div>
@@ -91,66 +323,152 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // Default order number
-        const DEFAULT_ORDER_NUMBER = '';
-
-        // Replace with your Google Sheets API key
-        const XXX = 'AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs';
-        // Replace with your Google Sheet ID
-        const YYY = '1jZeFmgnQtui6KjhlyrjH5c8VZOtb4vBztMmD8phtF10';
-        // Sheet name for orders
-        const ZZZ = 'Orders!A:Z';
-
+        // Configuration
+        const CONFIG = {
+            API_KEY: 'AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs',
+            SPREADSHEET_ID: '1jEm8NKXiqlKDhpzb7RXQElASiLo4AgMF8kFsZkbLcnM',
+            RANGE: 'Orders!A:Z'
+        };
+        
+        // State
+        let orderData = null;
+        
+        // DOM Elements
+        const elements = {
+            loadingOverlay: document.getElementById('loading-overlay'),
+            orderStatus: document.getElementById('orderStatus'),
+            orderContent: document.getElementById('orderContent')
+        };
+        
+        // Utility functions
         function showLoading() {
-            document.getElementById('loading-overlay').style.display = 'flex';
+            elements.loadingOverlay.style.display = 'flex';
         }
-
+        
         function hideLoading() {
-            document.getElementById('loading-overlay').style.display = 'none';
+            elements.loadingOverlay.style.display = 'none';
         }
-
-        function initClient() {
+        
+        function showError(message) {
+            elements.orderContent.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> ${message}
+                </div>
+            `;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'N/A') return 'N/A';
+            
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        function formatCurrency(amount, currency = 'AED') {
+            if (!amount || isNaN(amount)) return 'N/A';
+            return `${currency} ${parseFloat(amount).toFixed(2)}`;
+        }
+        
+        function parseOrderItems(orderText) {
+            if (!orderText) return [];
+            
+            const items = [];
+            const lines = orderText.split('\n');
+            
+            for (const line of lines) {
+                if (line.includes('x') && (line.includes('AED') || line.includes('$'))) {
+                    const match = line.match(/(\d+(\.\d+)?)x\s+(.+?)\s+-\s+([A-Z]{3})\s+([\d,]+\.\d{2})/);
+                    if (match) {
+                        const [, quantity, , name, currency, price] = match;
+                        items.push({
+                            name: name.trim(),
+                            quantity: parseFloat(quantity),
+                            price: parseFloat(price.replace(',', '')),
+                            currency: currency
+                        });
+                    }
+                }
+            }
+            
+            return items;
+        }
+        
+        function calculateOrderTotal(items) {
+            return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+        
+        // Initialize application
+        function initApp() {
             showLoading();
+            gapi.load('client', initClient);
+        }
+        
+        function initClient() {
             gapi.client.init({
-                'apiKey': XXX,
+                'apiKey': CONFIG.API_KEY,
                 'discoveryDocs': ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-            }).then(function () {
-                // Get order number from URL, use default if not provided
+            }).then(() => {
+                // Get order number from URL
                 const urlParams = new URLSearchParams(window.location.search);
-                const orderNumber = urlParams.get('order') || DEFAULT_ORDER_NUMBER;
+                const orderNumber = urlParams.get('order') || '';
+                
+                if (!orderNumber) {
+                    showError('No order number provided in the URL');
+                    hideLoading();
+                    return;
+                }
                 
                 fetchOrderDetails(orderNumber);
-            }, function (error) {
+            }).catch(error => {
                 console.error('Error initializing GAPI client:', error);
-                displayError('Failed to initialize Google Sheets API');
+                showError('Failed to initialize. Please refresh the page.');
                 hideLoading();
             });
         }
-
+        
         function fetchOrderDetails(orderNumber) {
             gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: YYY,
-                range: ZZZ
-            }).then(function (response) {
+                spreadsheetId: CONFIG.SPREADSHEET_ID,
+                range: CONFIG.RANGE
+            }).then(response => {
                 const data = response.result.values;
+                if (!data || data.length === 0) {
+                    showError('No order data found');
+                    hideLoading();
+                    return;
+                }
+                
                 const headers = data[0];
                 const orderDetails = findOrderByNumber(data, orderNumber);
-
+                
                 if (orderDetails) {
-                    renderOrderDetails(headers, orderDetails);
+                    orderData = mapOrderData(headers, orderDetails);
+                    renderOrderDetails(orderData);
                 } else {
-                    displayError('Order not found');
+                    renderOrderNotFound(orderNumber);
                 }
                 hideLoading();
-            }, function (response) {
-                console.error('Error: ' + response.result.error.message);
-                displayError('Failed to retrieve order details');
+            }).catch(error => {
+                console.error('Error fetching order details:', error);
+                showError('Failed to retrieve order details. Please try again later.');
                 hideLoading();
             });
         }
-
+        
         function findOrderByNumber(data, orderNumber) {
             const orderNumberIndex = data[0].indexOf('OrderNumber');
+            if (orderNumberIndex === -1) return null;
+            
             for (let i = 1; i < data.length; i++) {
                 if (data[i] && data[i][orderNumberIndex] === orderNumber) {
                     return data[i];
@@ -158,88 +476,170 @@
             }
             return null;
         }
-
-        function renderOrderDetails(headers, orderDetails) {
-            const orderDetailsContainer = document.getElementById('orderDetails');
-            const orderStatusElement = document.getElementById('orderStatus');
-
-            // Create an object mapping headers to values for easier access
+        
+        function mapOrderData(headers, orderDetails) {
             const orderMap = {};
             headers.forEach((header, index) => {
                 orderMap[header] = orderDetails[index] || 'N/A';
             });
-
-            // Set order status
-            const status = orderMap['Status'] || 'Unknown';
-            orderStatusElement.textContent = status;
-
-            // Assign status class
+            return orderMap;
+        }
+        
+        function renderOrderDetails(order) {
+            // Set order status with appropriate styling
+            const status = order.Status || 'Unknown';
+            elements.orderStatus.textContent = status;
+            elements.orderStatus.className = 'order-status';
+            
             switch (status.toLowerCase()) {
                 case 'pending':
-                    orderStatusElement.classList.add('status-pending');
+                    elements.orderStatus.classList.add('status-pending');
                     break;
                 case 'completed':
-                    orderStatusElement.classList.add('status-completed');
+                    elements.orderStatus.classList.add('status-completed');
                     break;
                 case 'cancelled':
-                    orderStatusElement.classList.add('status-cancelled');
+                    elements.orderStatus.classList.add('status-cancelled');
                     break;
                 case 'delivered':
-                    orderStatusElement.classList.add('status-delivered');
+                    elements.orderStatus.classList.add('status-delivered');
+                    break;
+                case 'processing':
+                    elements.orderStatus.classList.add('status-processing');
                     break;
                 default:
-                    orderStatusElement.classList.add('text-muted'); // Default style for unknown statuses
+                    elements.orderStatus.classList.add('status-pending');
             }
-
-            // Generate HTML for order details
-            orderDetailsContainer.innerHTML = `
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <strong>Order Number:</strong> ${orderMap['OrderNumber']}
+            
+            // Parse order items
+            const orderItems = parseOrderItems(order.Order);
+            const orderTotal = calculateOrderTotal(orderItems);
+            const currency = orderItems.length > 0 ? orderItems[0].currency : 'AED';
+            
+            // Render order details
+            elements.orderContent.innerHTML = `
+                <div class="order-info-card">
+                    <div class="order-info-header">
+                        <i class="bi bi-info-circle"></i> Order Information
+                    </div>
+                    <div class="order-info-body">
+                        <div class="info-row">
+                            <div class="info-label">Order Number:</div>
+                            <div class="info-value">${order.OrderNumber || 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Order Date:</div>
+                            <div class="info-value">${formatDate(order.Timestamp)}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Status:</div>
+                            <div class="info-value">${status}</div>
+                        </div>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <strong>Name:</strong> ${orderMap['Name']}
+                
+                <div class="order-info-card">
+                    <div class="order-info-header">
+                        <i class="bi bi-person"></i> Customer Information
                     </div>
-                    <div class="col-md-6">
-                        <strong>Phone:</strong> ${orderMap['Phone']}
+                    <div class="order-info-body">
+                        <div class="info-row">
+                            <div class="info-label">Name:</div>
+                            <div class="info-value">${order.Name || 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Phone:</div>
+                            <div class="info-value">${order.Phone || 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Email:</div>
+                            <div class="info-value">${order.Email || 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Address:</div>
+                            <div class="info-value">${order.Address || 'N/A'}</div>
+                        </div>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <strong>Email:</strong> ${orderMap['Email']}
+                
+                <div class="order-info-card">
+                    <div class="order-info-header">
+                        <i class="bi bi-cart"></i> Order Items
                     </div>
-                    <div class="col-md-6">
-                        <strong>Address:</strong> ${orderMap['Address']}
+                    <div class="order-info-body">
+                        ${orderItems.length > 0 ? `
+                            <div class="order-items">
+                                ${orderItems.map(item => `
+                                    <div class="order-item">
+                                        <div class="item-name">${item.name}</div>
+                                        <div class="item-quantity">${item.quantity} x</div>
+                                        <div class="item-price">${formatCurrency(item.price, item.currency)}</div>
+                                        <div class="item-total">${formatCurrency(item.price * item.quantity, item.currency)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="order-summary">
+                                <div class="summary-row">
+                                    <div>Subtotal:</div>
+                                    <div>${formatCurrency(orderTotal, currency)}</div>
+                                </div>
+                                <div class="summary-row">
+                                    <div>Shipping:</div>
+                                    <div>${formatCurrency(0, currency)}</div>
+                                </div>
+                                <div class="summary-row">
+                                    <div>Tax:</div>
+                                    <div>${formatCurrency(0, currency)}</div>
+                                </div>
+                                <div class="summary-row summary-total">
+                                    <div>Total:</div>
+                                    <div>${formatCurrency(orderTotal, currency)}</div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> No detailed order items available.
+                                <pre>${order.Order || 'No order details'}</pre>
+                            </div>
+                        `}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <h4>Order Items</h4>
-                        <pre>${orderMap['Order'] || 'No order details available'}</pre>
+                
+                ${order.Notes && order.Notes !== 'N/A' ? `
+                    <div class="notes-section">
+                        <h4><i class="bi bi-chat-left-text"></i> Order Notes</h4>
+                        <p>${order.Notes}</p>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 notes-section">
-                        <h4>Notes</h4>
-                        <p>${orderMap['Notes'] || 'No notes available'}</p>
-                    </div>
+                ` : ''}
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Print Order
+                    </button>
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Shop
+                    </a>
                 </div>
             `;
         }
-
-        function displayError(message) {
-            const orderDetailsContainer = document.getElementById('orderDetails');
-            orderDetailsContainer.innerHTML = `
-                <div class="alert alert-danger" role="alert">
-                    ${message}
+        
+        function renderOrderNotFound(orderNumber) {
+            elements.orderContent.innerHTML = `
+                <div class="order-not-found">
+                    <i class="bi bi-search"></i>
+                    <h3>Order Not Found</h3>
+                    <p>We couldn't find an order with number: <strong>${orderNumber}</strong></p>
+                    <p>Please check the order number and try again.</p>
+                    <a href="/" class="btn btn-primary mt-3">
+                        <i class="bi bi-arrow-left"></i> Back to Shop
+                    </a>
                 </div>
             `;
         }
-
-        // Load the Google Sheets API
-        gapi.load('client', initClient);
+        
+        // Initialize the application
+        initApp();
     </script>
 </body>
 </html>
