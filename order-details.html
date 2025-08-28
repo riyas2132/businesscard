@@ -18,6 +18,9 @@
         body {
             background-color: #f4f6f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         .order-container {
@@ -27,6 +30,7 @@
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            flex: 1;
         }
         
         .order-header {
@@ -79,7 +83,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -212,51 +216,20 @@
             margin-bottom: 1rem;
         }
         
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
+        .error-section {
+            background-color: #f8d7da;
+            border-radius: 8px;
+            padding: 1.5rem;
             margin: 1.5rem 0;
+            border-left: 4px solid #dc3545;
         }
         
-        .timeline:before {
-            content: '';
-            position: absolute;
-            left: 10px;
-            top: 0;
-            height: 100%;
-            width: 2px;
+        .footer {
             background-color: var(--primary-color);
-        }
-        
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-        
-        .timeline-item:last-child {
-            margin-bottom: 0;
-        }
-        
-        .timeline-marker {
-            position: absolute;
-            left: -2rem;
-            top: 0;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            border: 3px solid white;
-        }
-        
-        .timeline-content {
-            padding: 0.5rem 1rem;
-            background-color: white;
-            border-radius: 6px;
-        }
-        
-        .timeline-date {
-            font-size: 0.8rem;
-            color: #6c757d;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            margin-top: auto;
         }
         
         @media (max-width: 768px) {
@@ -303,7 +276,7 @@
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <div class="loading-text">Loading order details...</div>
+        <div class="loading-text" id="loading-text">Loading order details...</div>
     </div>
 
     <div class="container py-4">
@@ -316,8 +289,21 @@
             <div id="orderContent">
                 <!-- Order content will be populated dynamically -->
             </div>
+
+            <div id="errorContainer" class="error-section" style="display: none;">
+                <h4><i class="bi bi-exclamation-triangle"></i> API Connection Issue</h4>
+                <p>We're having trouble connecting to the order database. Showing sample order details instead.</p>
+                <button class="btn btn-sm btn-outline-danger mt-2" onclick="retryLoading()">Retry Connection</button>
+            </div>
         </div>
     </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Shop Name. All rights reserved.</p>
+            <p class="small">Order Details System</p>
+        </div>
+    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -327,17 +313,37 @@
         const CONFIG = {
             API_KEY: 'AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs',
             SPREADSHEET_ID: '1jEm8NKXiqlKDhpzb7RXQElASiLo4AgMF8kFsZkbLcnM',
-            RANGE: 'Orders!A:Z'
+            RANGE: 'Orders!A:Z',
+            RETRY_ATTEMPTS: 3,
+            RETRY_DELAY: 2000
         };
         
         // State
         let orderData = null;
+        let retryCount = 0;
+        let usingMockData = false;
         
         // DOM Elements
         const elements = {
             loadingOverlay: document.getElementById('loading-overlay'),
+            loadingText: document.getElementById('loading-text'),
             orderStatus: document.getElementById('orderStatus'),
-            orderContent: document.getElementById('orderContent')
+            orderContent: document.getElementById('orderContent'),
+            errorContainer: document.getElementById('errorContainer')
+        };
+        
+        // Mock data for demonstration
+        const mockOrderData = {
+            OrderNumber: 'ORD-230812-143025',
+            Timestamp: '2023-08-12 14:30:25',
+            Status: 'Processing',
+            Name: 'John Smith',
+            Phone: '+1 (555) 123-4567',
+            Email: 'john.smith@example.com',
+            Address: '123 Main Street, Apt 4B, New York, NY 10001, USA',
+            Order: `Order Number: ORD-230812-143025\n\nOrder Details:\n2x Premium Coffee Beans - AED 45.00 each = AED 90.00\n1x Ceramic Coffee Mug - AED 25.00 each = AED 25.00\n3x Chocolate Chip Cookies - AED 8.00 each = AED 24.00\n\nTotal: AED 139.00`,
+            Notes: 'Please deliver after 5 PM. Ring the bell twice.',
+            Currency: 'AED'
         };
         
         // Utility functions
@@ -349,12 +355,22 @@
             elements.loadingOverlay.style.display = 'none';
         }
         
-        function showError(message) {
+        function updateLoadingText(text) {
+            elements.loadingText.textContent = text;
+        }
+        
+        function showError(message, isFatal = false) {
             elements.orderContent.innerHTML = `
                 <div class="alert alert-danger" role="alert">
                     <i class="bi bi-exclamation-triangle-fill"></i> ${message}
+                    ${!isFatal ? '<div class="mt-2">Showing sample data instead.</div>' : ''}
                 </div>
             `;
+            
+            if (!isFatal) {
+                elements.errorContainer.style.display = 'block';
+                renderOrderDetails(mockOrderData);
+            }
         }
         
         function formatDate(dateString) {
@@ -400,6 +416,17 @@
                 }
             }
             
+            // If parsing failed, create a fallback item
+            if (items.length === 0 && orderText) {
+                items.push({
+                    name: 'Order Items',
+                    quantity: 1,
+                    price: 0,
+                    currency: 'AED',
+                    rawText: orderText
+                });
+            }
+            
             return items;
         }
         
@@ -410,40 +437,74 @@
         // Initialize application
         function initApp() {
             showLoading();
-            gapi.load('client', initClient);
+            updateLoadingText("Initializing...");
+            
+            // Get order number from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderNumber = urlParams.get('order') || '';
+            
+            if (!orderNumber) {
+                showError('No order number provided in the URL. Please check the URL and try again.', true);
+                hideLoading();
+                return;
+            }
+            
+            // Try to load Google API
+            try {
+                gapi.load('client', initClient);
+            } catch (error) {
+                console.error('Failed to load Google API:', error);
+                updateLoadingText("Failed to load API. Using sample data...");
+                setTimeout(() => {
+                    useMockData(orderNumber);
+                }, 1500);
+            }
         }
         
         function initClient() {
+            updateLoadingText("Connecting to Google API...");
+            
             gapi.client.init({
                 'apiKey': CONFIG.API_KEY,
                 'discoveryDocs': ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
             }).then(() => {
+                updateLoadingText("Fetching order details...");
+                
                 // Get order number from URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const orderNumber = urlParams.get('order') || '';
                 
-                if (!orderNumber) {
-                    showError('No order number provided in the URL');
-                    hideLoading();
-                    return;
-                }
-                
                 fetchOrderDetails(orderNumber);
             }).catch(error => {
                 console.error('Error initializing GAPI client:', error);
-                showError('Failed to initialize. Please refresh the page.');
-                hideLoading();
+                
+                if (retryCount < CONFIG.RETRY_ATTEMPTS) {
+                    retryCount++;
+                    updateLoadingText(`Connection failed. Retrying (${retryCount}/${CONFIG.RETRY_ATTEMPTS})...`);
+                    setTimeout(() => initClient(), CONFIG.RETRY_DELAY);
+                } else {
+                    updateLoadingText("Connection failed. Using sample data...");
+                    
+                    // Use mock data after a brief delay to show the message
+                    setTimeout(() => {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const orderNumber = urlParams.get('order') || '';
+                        useMockData(orderNumber);
+                    }, 1500);
+                }
             });
         }
         
         function fetchOrderDetails(orderNumber) {
+            updateLoadingText("Loading order details...");
+            
             gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: CONFIG.SPREADSHEET_ID,
                 range: CONFIG.RANGE
             }).then(response => {
                 const data = response.result.values;
                 if (!data || data.length === 0) {
-                    showError('No order data found');
+                    showError('No order data found in the database');
                     hideLoading();
                     return;
                 }
@@ -460,12 +521,43 @@
                 hideLoading();
             }).catch(error => {
                 console.error('Error fetching order details:', error);
-                showError('Failed to retrieve order details. Please try again later.');
-                hideLoading();
+                
+                if (retryCount < CONFIG.RETRY_ATTEMPTS) {
+                    retryCount++;
+                    updateLoadingText(`Failed to load data. Retrying (${retryCount}/${CONFIG.RETRY_ATTEMPTS})...`);
+                    setTimeout(() => fetchOrderDetails(orderNumber), CONFIG.RETRY_DELAY);
+                } else {
+                    updateLoadingText("Failed to load data. Using sample data...");
+                    
+                    // Use mock data after a brief delay to show the message
+                    setTimeout(() => {
+                        useMockData(orderNumber);
+                    }, 1500);
+                }
             });
         }
         
+        function useMockData(orderNumber) {
+            usingMockData = true;
+            elements.errorContainer.style.display = 'block';
+            
+            // Modify mock data to include the actual order number from URL
+            const mockData = {...mockOrderData};
+            mockData.OrderNumber = orderNumber || mockData.OrderNumber;
+            
+            renderOrderDetails(mockData);
+            hideLoading();
+        }
+        
+        function retryLoading() {
+            retryCount = 0;
+            elements.errorContainer.style.display = 'none';
+            initApp();
+        }
+        
         function findOrderByNumber(data, orderNumber) {
+            if (!data || data.length === 0) return null;
+            
             const orderNumberIndex = data[0].indexOf('OrderNumber');
             if (orderNumberIndex === -1) return null;
             
@@ -514,7 +606,7 @@
             // Parse order items
             const orderItems = parseOrderItems(order.Order);
             const orderTotal = calculateOrderTotal(orderItems);
-            const currency = orderItems.length > 0 ? orderItems[0].currency : 'AED';
+            const currency = orderItems.length > 0 ? orderItems[0].currency : (order.Currency || 'AED');
             
             // Render order details
             elements.orderContent.innerHTML = `
@@ -620,6 +712,11 @@
                     <a href="/" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Back to Shop
                     </a>
+                    ${usingMockData ? `
+                        <button class="btn btn-outline-info" onclick="retryLoading()">
+                            <i class="bi bi-arrow-clockwise"></i> Retry Connection
+                        </button>
+                    ` : ''}
                 </div>
             `;
         }
@@ -638,8 +735,8 @@
             `;
         }
         
-        // Initialize the application
-        initApp();
+        // Initialize the application when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
