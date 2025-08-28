@@ -6,268 +6,64 @@
     <title>Order Details</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <style>
-        :root {
-            --primary-color: #1976D2;
-            --secondary-color: #E3F2FD;
-            --accent-color: #FFFFFF;
-        }
-        
         body {
             background-color: #f4f6f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
-        
         .order-container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 2rem auto;
             background-color: white;
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            flex: 1;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        
         .order-header {
-            border-bottom: 2px solid var(--primary-color);
+            border-bottom: 2px solid #1976D2;
             padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+            margin-bottom: 1rem;
         }
-        
         .order-status {
             font-weight: bold;
             text-transform: uppercase;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
         }
-        
         .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
+            color: orange;
         }
-        
         .status-completed {
-            background-color: #d4edda;
-            color: #155724;
+            color: green;
         }
-        
         .status-cancelled {
-            background-color: #f8d7da;
-            color: #721c24;
+            color: red;
         }
-        
         .status-delivered {
-            background-color: #cce5ff;
-            color: #004085;
+            color: blue;
         }
-        
-        .status-processing {
-            background-color: #d1ecf1;
-            color: #0c5460;
-        }
-        
         #loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            flex-direction: column;
         }
-        
         .spinner-border {
             width: 3rem;
             height: 3rem;
-            color: var(--primary-color);
         }
-        
-        .loading-text {
-            margin-top: 1rem;
-            color: var(--primary-color);
-            font-weight: 500;
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        
-        .order-info-card {
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-        
-        .order-info-header {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-bottom: 1px solid #e0e0e0;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .order-info-body {
-            padding: 1.5rem;
-        }
-        
-        .info-row {
-            display: flex;
-            margin-bottom: 0.8rem;
-            flex-wrap: wrap;
-        }
-        
-        .info-label {
-            font-weight: 600;
-            min-width: 120px;
-            color: #555;
-        }
-        
-        .info-value {
-            flex: 1;
-        }
-        
-        .order-items {
-            margin-top: 1.5rem;
-        }
-        
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .order-item:last-child {
-            border-bottom: none;
-        }
-        
-        .item-name {
-            flex: 2;
-        }
-        
-        .item-quantity, .item-price, .item-total {
-            flex: 1;
-            text-align: right;
-        }
-        
-        .order-summary {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-        }
-        
-        .summary-total {
-            font-weight: bold;
-            font-size: 1.2rem;
-            border-top: 2px solid #ddd;
-            margin-top: 0.5rem;
-            padding-top: 0.8rem;
-        }
-        
         .notes-section {
             margin-top: 1.5rem;
-            padding: 1.5rem;
+            padding: 1rem;
             background-color: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .order-not-found {
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .order-not-found i {
-            font-size: 4rem;
-            color: #ccc;
-            margin-bottom: 1rem;
-        }
-        
-        .error-section {
-            background-color: #f8d7da;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #dc3545;
-        }
-        
-        .footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1.5rem 0;
-            text-align: center;
-            margin-top: auto;
-        }
-        
-        @media (max-width: 768px) {
-            .order-container {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            
-            .order-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .info-row {
-                flex-direction: column;
-                margin-bottom: 1rem;
-            }
-            
-            .info-label {
-                margin-bottom: 0.3rem;
-            }
-            
-            .order-item {
-                flex-direction: column;
-            }
-            
-            .item-quantity, .item-price, .item-total {
-                text-align: left;
-                margin-top: 0.3rem;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -276,291 +72,85 @@
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <div class="loading-text" id="loading-text">Loading order details...</div>
     </div>
 
-    <div class="container py-4">
+    <div class="container">
         <div class="order-container">
-            <div class="order-header">
-                <h2><i class="bi bi-receipt"></i> Order Details</h2>
-                <div class="order-status" id="orderStatus">Loading...</div>
+            <div class="order-header d-flex justify-content-between align-items-center">
+                <h2>Order Details</h2>
+                <div class="order-status" id="orderStatus"></div>
             </div>
             
-            <div id="orderContent">
-                <!-- Order content will be populated dynamically -->
-            </div>
-
-            <div id="errorContainer" class="error-section" style="display: none;">
-                <h4><i class="bi bi-exclamation-triangle"></i> API Connection Issue</h4>
-                <p>We're having trouble connecting to the order database. Showing sample order details instead.</p>
-                <button class="btn btn-sm btn-outline-danger mt-2" onclick="retryLoading()">Retry Connection</button>
+            <div id="orderDetails">
+                <!-- Order details will be populated dynamically -->
             </div>
         </div>
     </div>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2023 Shop Name. All rights reserved.</p>
-            <p class="small">Order Details System</p>
-        </div>
-    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // Configuration
-        const CONFIG = {
-            API_KEY: 'AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs',
-            SPREADSHEET_ID: '1jEm8NKXiqlKDhpzb7RXQElASiLo4AgMF8kFsZkbLcnM',
-            RANGE: 'Orders!A:Z',
-            RETRY_ATTEMPTS: 3,
-            RETRY_DELAY: 2000
-        };
-        
-        // State
-        let orderData = null;
-        let retryCount = 0;
-        let usingMockData = false;
-        
-        // DOM Elements
-        const elements = {
-            loadingOverlay: document.getElementById('loading-overlay'),
-            loadingText: document.getElementById('loading-text'),
-            orderStatus: document.getElementById('orderStatus'),
-            orderContent: document.getElementById('orderContent'),
-            errorContainer: document.getElementById('errorContainer')
-        };
-        
-        // Mock data for demonstration
-        const mockOrderData = {
-            OrderNumber: 'ORD-230812-143025',
-            Timestamp: '2023-08-12 14:30:25',
-            Status: 'Processing',
-            Name: 'John Smith',
-            Phone: '+1 (555) 123-4567',
-            Email: 'john.smith@example.com',
-            Address: '123 Main Street, Apt 4B, New York, NY 10001, USA',
-            Order: `Order Number: ORD-230812-143025\n\nOrder Details:\n2x Premium Coffee Beans - AED 45.00 each = AED 90.00\n1x Ceramic Coffee Mug - AED 25.00 each = AED 25.00\n3x Chocolate Chip Cookies - AED 8.00 each = AED 24.00\n\nTotal: AED 139.00`,
-            Notes: 'Please deliver after 5 PM. Ring the bell twice.',
-            Currency: 'AED'
-        };
-        
-        // Utility functions
+        // Default order number
+        const DEFAULT_ORDER_NUMBER = 'ORD-250828-170411';
+
+        // Replace with your Google Sheets API key
+        const XXX = 'AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs';
+        // Replace with your Google Sheet ID
+        const YYY = '1jEm8NKXiqlKDhpzb7RXQElASiLo4AgMF8kFsZkbLcnM';
+        // Sheet name for orders
+        const ZZZ = 'Orders!A:Z';
+
         function showLoading() {
-            elements.loadingOverlay.style.display = 'flex';
+            document.getElementById('loading-overlay').style.display = 'flex';
         }
-        
+
         function hideLoading() {
-            elements.loadingOverlay.style.display = 'none';
+            document.getElementById('loading-overlay').style.display = 'none';
         }
-        
-        function updateLoadingText(text) {
-            elements.loadingText.textContent = text;
-        }
-        
-        function showError(message, isFatal = false) {
-            elements.orderContent.innerHTML = `
-                <div class="alert alert-danger" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill"></i> ${message}
-                    ${!isFatal ? '<div class="mt-2">Showing sample data instead.</div>' : ''}
-                </div>
-            `;
-            
-            if (!isFatal) {
-                elements.errorContainer.style.display = 'block';
-                renderOrderDetails(mockOrderData);
-            }
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString || dateString === 'N/A') return 'N/A';
-            
-            try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            } catch (e) {
-                return dateString;
-            }
-        }
-        
-        function formatCurrency(amount, currency = 'AED') {
-            if (!amount || isNaN(amount)) return 'N/A';
-            return `${currency} ${parseFloat(amount).toFixed(2)}`;
-        }
-        
-        function parseOrderItems(orderText) {
-            if (!orderText) return [];
-            
-            const items = [];
-            const lines = orderText.split('\n');
-            
-            for (const line of lines) {
-                if (line.includes('x') && (line.includes('AED') || line.includes('$'))) {
-                    const match = line.match(/(\d+(\.\d+)?)x\s+(.+?)\s+-\s+([A-Z]{3})\s+([\d,]+\.\d{2})/);
-                    if (match) {
-                        const [, quantity, , name, currency, price] = match;
-                        items.push({
-                            name: name.trim(),
-                            quantity: parseFloat(quantity),
-                            price: parseFloat(price.replace(',', '')),
-                            currency: currency
-                        });
-                    }
-                }
-            }
-            
-            // If parsing failed, create a fallback item
-            if (items.length === 0 && orderText) {
-                items.push({
-                    name: 'Order Items',
-                    quantity: 1,
-                    price: 0,
-                    currency: 'AED',
-                    rawText: orderText
-                });
-            }
-            
-            return items;
-        }
-        
-        function calculateOrderTotal(items) {
-            return items.reduce((total, item) => total + (item.price * item.quantity), 0);
-        }
-        
-        // Initialize application
-        function initApp() {
-            showLoading();
-            updateLoadingText("Initializing...");
-            
-            // Get order number from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const orderNumber = urlParams.get('order') || '';
-            
-            if (!orderNumber) {
-                showError('No order number provided in the URL. Please check the URL and try again.', true);
-                hideLoading();
-                return;
-            }
-            
-            // Try to load Google API
-            try {
-                gapi.load('client', initClient);
-            } catch (error) {
-                console.error('Failed to load Google API:', error);
-                updateLoadingText("Failed to load API. Using sample data...");
-                setTimeout(() => {
-                    useMockData(orderNumber);
-                }, 1500);
-            }
-        }
-        
+
         function initClient() {
-            updateLoadingText("Connecting to Google API...");
-            
+            showLoading();
             gapi.client.init({
-                'apiKey': CONFIG.API_KEY,
+                'apiKey': XXX,
                 'discoveryDocs': ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-            }).then(() => {
-                updateLoadingText("Fetching order details...");
-                
-                // Get order number from URL
+            }).then(function () {
+                // Get order number from URL, use default if not provided
                 const urlParams = new URLSearchParams(window.location.search);
-                const orderNumber = urlParams.get('order') || '';
+                const orderNumber = urlParams.get('order') || DEFAULT_ORDER_NUMBER;
                 
                 fetchOrderDetails(orderNumber);
-            }).catch(error => {
+            }, function (error) {
                 console.error('Error initializing GAPI client:', error);
-                
-                if (retryCount < CONFIG.RETRY_ATTEMPTS) {
-                    retryCount++;
-                    updateLoadingText(`Connection failed. Retrying (${retryCount}/${CONFIG.RETRY_ATTEMPTS})...`);
-                    setTimeout(() => initClient(), CONFIG.RETRY_DELAY);
-                } else {
-                    updateLoadingText("Connection failed. Using sample data...");
-                    
-                    // Use mock data after a brief delay to show the message
-                    setTimeout(() => {
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const orderNumber = urlParams.get('order') || '';
-                        useMockData(orderNumber);
-                    }, 1500);
-                }
+                displayError('Failed to initialize Google Sheets API');
+                hideLoading();
             });
         }
-        
+
         function fetchOrderDetails(orderNumber) {
-            updateLoadingText("Loading order details...");
-            
             gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: CONFIG.SPREADSHEET_ID,
-                range: CONFIG.RANGE
-            }).then(response => {
+                spreadsheetId: YYY,
+                range: ZZZ
+            }).then(function (response) {
                 const data = response.result.values;
-                if (!data || data.length === 0) {
-                    showError('No order data found in the database');
-                    hideLoading();
-                    return;
-                }
-                
                 const headers = data[0];
                 const orderDetails = findOrderByNumber(data, orderNumber);
-                
+
                 if (orderDetails) {
-                    orderData = mapOrderData(headers, orderDetails);
-                    renderOrderDetails(orderData);
+                    renderOrderDetails(headers, orderDetails);
                 } else {
-                    renderOrderNotFound(orderNumber);
+                    displayError('Order not found');
                 }
                 hideLoading();
-            }).catch(error => {
-                console.error('Error fetching order details:', error);
-                
-                if (retryCount < CONFIG.RETRY_ATTEMPTS) {
-                    retryCount++;
-                    updateLoadingText(`Failed to load data. Retrying (${retryCount}/${CONFIG.RETRY_ATTEMPTS})...`);
-                    setTimeout(() => fetchOrderDetails(orderNumber), CONFIG.RETRY_DELAY);
-                } else {
-                    updateLoadingText("Failed to load data. Using sample data...");
-                    
-                    // Use mock data after a brief delay to show the message
-                    setTimeout(() => {
-                        useMockData(orderNumber);
-                    }, 1500);
-                }
+            }, function (response) {
+                console.error('Error: ' + response.result.error.message);
+                displayError('Failed to retrieve order details');
+                hideLoading();
             });
         }
-        
-        function useMockData(orderNumber) {
-            usingMockData = true;
-            elements.errorContainer.style.display = 'block';
-            
-            // Modify mock data to include the actual order number from URL
-            const mockData = {...mockOrderData};
-            mockData.OrderNumber = orderNumber || mockData.OrderNumber;
-            
-            renderOrderDetails(mockData);
-            hideLoading();
-        }
-        
-        function retryLoading() {
-            retryCount = 0;
-            elements.errorContainer.style.display = 'none';
-            initApp();
-        }
-        
+
         function findOrderByNumber(data, orderNumber) {
-            if (!data || data.length === 0) return null;
-            
             const orderNumberIndex = data[0].indexOf('OrderNumber');
-            if (orderNumberIndex === -1) return null;
-            
             for (let i = 1; i < data.length; i++) {
                 if (data[i] && data[i][orderNumberIndex] === orderNumber) {
                     return data[i];
@@ -568,175 +158,88 @@
             }
             return null;
         }
-        
-        function mapOrderData(headers, orderDetails) {
+
+        function renderOrderDetails(headers, orderDetails) {
+            const orderDetailsContainer = document.getElementById('orderDetails');
+            const orderStatusElement = document.getElementById('orderStatus');
+
+            // Create an object mapping headers to values for easier access
             const orderMap = {};
             headers.forEach((header, index) => {
                 orderMap[header] = orderDetails[index] || 'N/A';
             });
-            return orderMap;
-        }
-        
-        function renderOrderDetails(order) {
-            // Set order status with appropriate styling
-            const status = order.Status || 'Unknown';
-            elements.orderStatus.textContent = status;
-            elements.orderStatus.className = 'order-status';
-            
+
+            // Set order status
+            const status = orderMap['Status'] || 'Unknown';
+            orderStatusElement.textContent = status;
+
+            // Assign status class
             switch (status.toLowerCase()) {
                 case 'pending':
-                    elements.orderStatus.classList.add('status-pending');
+                    orderStatusElement.classList.add('status-pending');
                     break;
                 case 'completed':
-                    elements.orderStatus.classList.add('status-completed');
+                    orderStatusElement.classList.add('status-completed');
                     break;
                 case 'cancelled':
-                    elements.orderStatus.classList.add('status-cancelled');
+                    orderStatusElement.classList.add('status-cancelled');
                     break;
                 case 'delivered':
-                    elements.orderStatus.classList.add('status-delivered');
-                    break;
-                case 'processing':
-                    elements.orderStatus.classList.add('status-processing');
+                    orderStatusElement.classList.add('status-delivered');
                     break;
                 default:
-                    elements.orderStatus.classList.add('status-pending');
+                    orderStatusElement.classList.add('text-muted'); // Default style for unknown statuses
             }
-            
-            // Parse order items
-            const orderItems = parseOrderItems(order.Order);
-            const orderTotal = calculateOrderTotal(orderItems);
-            const currency = orderItems.length > 0 ? orderItems[0].currency : (order.Currency || 'AED');
-            
-            // Render order details
-            elements.orderContent.innerHTML = `
-                <div class="order-info-card">
-                    <div class="order-info-header">
-                        <i class="bi bi-info-circle"></i> Order Information
-                    </div>
-                    <div class="order-info-body">
-                        <div class="info-row">
-                            <div class="info-label">Order Number:</div>
-                            <div class="info-value">${order.OrderNumber || 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Order Date:</div>
-                            <div class="info-value">${formatDate(order.Timestamp)}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Status:</div>
-                            <div class="info-value">${status}</div>
-                        </div>
+
+            // Generate HTML for order details
+            orderDetailsContainer.innerHTML = `
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Order Number:</strong> ${orderMap['OrderNumber']}
                     </div>
                 </div>
-                
-                <div class="order-info-card">
-                    <div class="order-info-header">
-                        <i class="bi bi-person"></i> Customer Information
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Name:</strong> ${orderMap['Name']}
                     </div>
-                    <div class="order-info-body">
-                        <div class="info-row">
-                            <div class="info-label">Name:</div>
-                            <div class="info-value">${order.Name || 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Phone:</div>
-                            <div class="info-value">${order.Phone || 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Email:</div>
-                            <div class="info-value">${order.Email || 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-label">Address:</div>
-                            <div class="info-value">${order.Address || 'N/A'}</div>
-                        </div>
+                    <div class="col-md-6">
+                        <strong>Phone:</strong> ${orderMap['Phone']}
                     </div>
                 </div>
-                
-                <div class="order-info-card">
-                    <div class="order-info-header">
-                        <i class="bi bi-cart"></i> Order Items
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Email:</strong> ${orderMap['Email']}
                     </div>
-                    <div class="order-info-body">
-                        ${orderItems.length > 0 ? `
-                            <div class="order-items">
-                                ${orderItems.map(item => `
-                                    <div class="order-item">
-                                        <div class="item-name">${item.name}</div>
-                                        <div class="item-quantity">${item.quantity} x</div>
-                                        <div class="item-price">${formatCurrency(item.price, item.currency)}</div>
-                                        <div class="item-total">${formatCurrency(item.price * item.quantity, item.currency)}</div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            
-                            <div class="order-summary">
-                                <div class="summary-row">
-                                    <div>Subtotal:</div>
-                                    <div>${formatCurrency(orderTotal, currency)}</div>
-                                </div>
-                                <div class="summary-row">
-                                    <div>Shipping:</div>
-                                    <div>${formatCurrency(0, currency)}</div>
-                                </div>
-                                <div class="summary-row">
-                                    <div>Tax:</div>
-                                    <div>${formatCurrency(0, currency)}</div>
-                                </div>
-                                <div class="summary-row summary-total">
-                                    <div>Total:</div>
-                                    <div>${formatCurrency(orderTotal, currency)}</div>
-                                </div>
-                            </div>
-                        ` : `
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle"></i> No detailed order items available.
-                                <pre>${order.Order || 'No order details'}</pre>
-                            </div>
-                        `}
+                    <div class="col-md-6">
+                        <strong>Address:</strong> ${orderMap['Address']}
                     </div>
                 </div>
-                
-                ${order.Notes && order.Notes !== 'N/A' ? `
-                    <div class="notes-section">
-                        <h4><i class="bi bi-chat-left-text"></i> Order Notes</h4>
-                        <p>${order.Notes}</p>
+                <div class="row">
+                    <div class="col-12">
+                        <h4>Order Items</h4>
+                        <pre>${orderMap['Order'] || 'No order details available'}</pre>
                     </div>
-                ` : ''}
-                
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="window.print()">
-                        <i class="bi bi-printer"></i> Print Order
-                    </button>
-                    <a href="/" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Back to Shop
-                    </a>
-                    ${usingMockData ? `
-                        <button class="btn btn-outline-info" onclick="retryLoading()">
-                            <i class="bi bi-arrow-clockwise"></i> Retry Connection
-                        </button>
-                    ` : ''}
+                </div>
+                <div class="row">
+                    <div class="col-12 notes-section">
+                        <h4>Notes</h4>
+                        <p>${orderMap['Notes'] || 'No notes available'}</p>
+                    </div>
                 </div>
             `;
         }
-        
-        function renderOrderNotFound(orderNumber) {
-            elements.orderContent.innerHTML = `
-                <div class="order-not-found">
-                    <i class="bi bi-search"></i>
-                    <h3>Order Not Found</h3>
-                    <p>We couldn't find an order with number: <strong>${orderNumber}</strong></p>
-                    <p>Please check the order number and try again.</p>
-                    <a href="/" class="btn btn-primary mt-3">
-                        <i class="bi bi-arrow-left"></i> Back to Shop
-                    </a>
+
+        function displayError(message) {
+            const orderDetailsContainer = document.getElementById('orderDetails');
+            orderDetailsContainer.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    ${message}
                 </div>
             `;
         }
-        
-        // Initialize the application when page loads
-        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Load the Google Sheets API
+        gapi.load('client', initClient);
     </script>
 </body>
 </html>
