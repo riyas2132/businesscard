@@ -982,17 +982,26 @@
             const messageDiv = document.getElementById('promoMessage');
             const code = input.value.trim();
             
-            if (state.promoCodes[code]) {
-                state.discountValue = state.promoCodes[code];
-                state.appliedPromo = code;
-                messageDiv.textContent = `Promo code "${code}" applied! You got ${state.discountValue}% off.`;
-                messageDiv.className = "mt-2 small text-success";
-            } else {
-                state.discountValue = 0;
-                state.appliedPromo = "";
-                messageDiv.textContent = code ? 'Invalid promo code.' : 'Please enter a promo code.';
-                messageDiv.className = "mt-2 small text-danger";
-            }
+			// Find matching promo code (case-insensitive)
+			const matchingPromoKey = Object.keys(state.promoCodes).find(key => 
+				key.toLowerCase() === code.toLowerCase()
+			);			
+			
+			if (matchingPromoKey) {
+				
+				state.discountValue = state.promoCodes[matchingPromoKey];
+				state.appliedPromo = matchingPromoKey; // Store the original case from the spreadsheet
+				messageDiv.textContent = `Promo code "${matchingPromoKey}" applied! You got ${state.discountValue}% off.`;
+				messageDiv.className = "mt-2 small text-success";
+				
+			} else {
+			
+				state.discountValue = 0;
+				state.appliedPromo = "";
+				messageDiv.textContent = code ? 'Invalid promo code.' : 'Please enter a promo code.';
+				messageDiv.className = "mt-2 small text-danger";
+				
+			}
             
             updateCartModal();
         }
