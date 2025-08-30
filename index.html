@@ -705,13 +705,14 @@
             document.querySelector('.footer .col-md-4:nth-child(2) p').innerHTML = 
                 `Email: ${state.shopInfo.email}<br>Phone: ${state.shopInfo.phone}`;
             
+			// Update contact links with phone number modification for different countries
 			let phoneForCall = state.shopInfo.phone;
 			if (state.shopInfo.phone.startsWith('971')) {
 				// UAE number: replace 971 with 0
 				phoneForCall = '0' + state.shopInfo.phone.substring(3);
 			} else if (state.shopInfo.phone.startsWith('91')) {
-				// Indian number: replace 91 with 0
-				phoneForCall = '0' + state.shopInfo.phone.substring(2);
+				// Indian number: keep as +91 format
+				phoneForCall = '+' + state.shopInfo.phone;
 			}
 			
 			// Update contact links
