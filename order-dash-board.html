@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+            margin-top: 0.5rem;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: -3rem auto 2rem;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .controls-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-date {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .filter-date:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .orders-table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .table-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .orders-table thead th {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #495057;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 1.5rem 1rem;
+            border: none;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .orders-table tbody td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
+
+        .orders-table tbody tr {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .orders-table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            transform: scale(1.01);
+        }
+
+        .order-number {
+            font-weight: 600;
+            color: #667eea;
+            font-family: 'Monaco', monospace;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+		
+		.status-test {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            color: white;
+        }
+
+        .status-cancelled {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .status-delivered {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+        }
+
+        .status-processing {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+        }
+
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .customer-contact {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .no-orders i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .error-alert {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .clear-dates-btn {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-dates-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .dashboard-title {
+                font-size: 2rem;
+            }
+
+            .main-container {
+                padding: 0 15px;
+                margin-top: -2rem;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-date {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .orders-table-container {
+                padding: 1rem;
+                overflow-x: auto;
+            }
+
+            .orders-table {
+                min-width: 800px;
+            }
+
+            .dashboard-header {
+                padding: 1.5rem 0;
+            }
+
+            .controls-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading orders...</div>
+    </div>
+
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-chart-line me-3"></i>Order Management Dashboard
+                    </h1>
+                    <p class="dashboard-subtitle">Track and manage all your orders in one place</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Controls Card -->
+        <div class="controls-card">
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by order number, customer name, email, or phone...">
+            </div>
+            
+            <div class="filter-controls">
+                <input type="date" id="fromDate" class="filter-date" title="From Date">
+                <input type="date" id="toDate" class="filter-date" title="To Date">
+                
+                <button id="clearDatesBtn" class="clear-dates-btn">
+                    <i class="fas fa-times me-2"></i>Clear Dates
+                </button>
+                
+                <button id="refreshBtn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table-container">
+            <div class="table-header">
+                <h2 class="table-title">
+                    <i class="fas fa-list-alt me-2"></i>
+                    Orders List (<span id="orderCount">0</span>)
+                </h2>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order Number</th>
+                            <th>Customer</th>
+                            <th>Status</th>
+                            <th>Date Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Orders will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Google Sheets Configuration
+        const API_KEY = 'AIzaSyByyiuwuJBysKl2xtvl6wCw6Gz9shyDzXs';
+        const SHEET_ID = '1jZeFmgnQtui6KjhlyrjH5c8VZOtb4vBztMmD8phtF10';
+        const SHEET_RANGE = 'Orders!A:Z';
+
+        // Global variables
+        let allOrders = [];
+        let filteredOrders = [];
+        let ordersHeaders = [];
+
+        // UI Elements
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const searchInput = document.getElementById('searchInput');
+        const fromDateInput = document.getElementById('fromDate');
+        const toDateInput = document.getElementById('toDate');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const clearDatesBtn = document.getElementById('clearDatesBtn');
+        const ordersTableBody = document.getElementById('ordersTableBody');
+        const orderCount = document.getElementById('orderCount');
+
+        function showLoading() {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+
+        function initClient() {
+            showLoading();
+            console.log('Initializing Google Sheets API...');
+            
+            gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            }).then(function () {
+                console.log('API initialized successfully');
+                fetchOrders();
+            }, function (error) {
+                console.error('Error initializing GAPI client:', error);
+                displayError(`Failed to initialize Google Sheets API: ${error.details || error.message || 'Unknown error'}`);
+                hideLoading();
+            });
+        }
+
+        // MODIFIED: Set today's date as default for both date filters
+        function initializeDateFilters() {
+            const today = new Date();
+            const todayFormatted = today.toISOString().split('T')[0];
+            
+            fromDateInput.value = todayFormatted;
+            toDateInput.value = todayFormatted;
+            
+            console.log('Date filters set to today:', todayFormatted);
+        }
+
+        function fetchOrders() {
+            console.log('Fetching orders from Google Sheet...');
+            
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: SHEET_ID,
+                range: SHEET_RANGE
+            }).then(function (response) {
+                console.log('Response received:', response);
+                const data = response.result.values;
+                
+                if (data && data.length > 0) {
+                    console.log('Data found:', data.length, 'rows');
+                    console.log('Headers:', data[0]);
+                    
+                    if (data.length > 1) {
+                        ordersHeaders = data[0];
+                        allOrders = data.slice(1).map(row => {
+                            const order = {};
+                            ordersHeaders.forEach((header, index) => {
+                                order[header] = row[index] || '';
+                            });
+                            return order;
+                        });
+                        
+                        console.log('Processed orders:', allOrders.length);
+                        console.log('Sample order:', allOrders[0]);
+                        
+                        filteredOrders = [...allOrders];
+                        initializeDateFilters(); // Set today's date as default
+                        filterOrders(); // Apply the default date filter
+                    } else {
+                        console.log('Only headers found, no data rows');
+                        displayNoOrders();
+                    }
+                } else {
+                    console.log('No data found in sheet');
+                    displayNoOrders();
+                }
+                hideLoading();
+            }, function (response) {
+                console.error('Error fetching data:', response);
+                let errorMessage = 'Failed to retrieve orders';
+                
+                if (response.result && response.result.error) {
+                    errorMessage += `: ${response.result.error.message}`;
+                    
+                    if (response.result.error.message.includes('API key not valid')) {
+                        errorMessage += '<br><strong>Solution:</strong> Check your API key configuration';
+                    } else if (response.result.error.message.includes('not found')) {
+                        errorMessage += '<br><strong>Solution:</strong> Check your Google Sheet ID';
+                    } else if (response.result.error.message.includes('permission')) {
+                        errorMessage += '<br><strong>Solution:</strong> Make sure the Google Sheet is publicly accessible or API key has proper permissions';
+                    }
+                }
+                
+                displayError(errorMessage);
+                hideLoading();
+            });
+        }
+
+        // IMPROVED: Better date parsing with multiple strategies
+        function parseOrderDate(timestamp) {
+            if (!timestamp || timestamp === '' || timestamp === 'N/A') {
+                return null;
+            }
+
+            console.log('Parsing timestamp:', timestamp, 'Type:', typeof timestamp);
+
+            // Strategy 1: Handle DD/MM/YYYY with optional time
+            const ddmmyyyyWithTimePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(AM|PM))?)?$/i;
+            let match = timestamp.match(ddmmyyyyWithTimePattern);
+            
+            if (match) {
+                const day = parseInt(match[1], 10);
+                const month = parseInt(match[2], 10) - 1; // JavaScript months are 0-indexed
+                const year = parseInt(match[3], 10);
+                let hours = parseInt(match[4] || '0', 10);
+                const minutes = parseInt(match[5] || '0', 10);
+                const seconds = parseInt(match[6] || '0', 10);
+                const ampm = match[7];
+                
+                // Handle AM/PM conversion
+                if (ampm) {
+                    if (ampm.toUpperCase() === 'PM' && hours !== 12) {
+                        hours += 12;
+                    } else if (ampm.toUpperCase() === 'AM' && hours === 12) {
+                        hours = 0;
+                    }
+                }
+                
+                const date = new Date(year, month, day, hours, minutes, seconds);
+                if (!isNaN(date.getTime())) {
+                    console.log('Parsed DD/MM/YYYY date:', date);
+                    return date;
+                }
+            }
+
+            // Strategy 2: Handle MM/DD/YYYY format (common in US)
+            const mmddyyyyPattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(AM|PM))?)?$/i;
+            match = timestamp.match(mmddyyyyPattern);
+            if (match) {
+                const month = parseInt(match[1], 10) - 1; // Try as MM/DD/YYYY
+                const day = parseInt(match[2], 10);
+                const year = parseInt(match[3], 10);
+                let hours = parseInt(match[4] || '0', 10);
+                const minutes = parseInt(match[5] || '0', 10);
+                const seconds = parseInt(match[6] || '0', 10);
+                const ampm = match[7];
+                
+                // Handle AM/PM conversion
+                if (ampm) {
+                    if (ampm.toUpperCase() === 'PM' && hours !== 12) {
+                        hours += 12;
+                    } else if (ampm.toUpperCase() === 'AM' && hours === 12) {
+                        hours = 0;
+                    }
+                }
+                
+                // Validate the date makes sense (month 0-11, day 1-31)
+                if (month >= 0 && month <= 11 && day >= 1 && day <= 31) {
+                    const date = new Date(year, month, day, hours, minutes, seconds);
+                    if (!isNaN(date.getTime())) {
+                        console.log('Parsed MM/DD/YYYY date:', date);
+                        return date;
+                    }
+                }
+            }
+
+            // Strategy 3: Handle Google Sheets serial number format
+            try {
+                const num = parseFloat(timestamp);
+                if (!isNaN(num) && num > 25569) { // Jan 1, 1970 in Excel serial
+                    // Convert Excel serial date to JavaScript date
+                    const date = new Date((num - 25569) * 86400 * 1000);
+                    if (!isNaN(date.getTime())) {
+                        console.log('Parsed serial date:', date);
+                        return date;
+                    }
+                }
+            } catch (e) {
+                console.log('Serial number parsing failed for:', timestamp);
+            }
+
+            // Strategy 4: Handle ISO date strings (YYYY-MM-DD format)
+            const isoPattern = /^\d{4}-\d{2}-\d{2}/;
+            if (isoPattern.test(timestamp)) {
+                try {
+                    const date = new Date(timestamp);
+                    if (!isNaN(date.getTime())) {
+                        console.log('Parsed ISO date:', date);
+                        return date;
+                    }
+                } catch (e) {
+                    console.log('ISO date parsing failed for:', timestamp);
+                }
+            }
+
+            // Strategy 5: Try direct Date constructor as final fallback
+            try {
+                const date = new Date(timestamp);
+                if (!isNaN(date.getTime())) {
+                    console.log('Parsed with Date constructor:', date);
+                    return date;
+                }
+            } catch (e) {
+                console.log('Direct date parsing failed for:', timestamp);
+            }
+
+            console.warn('Could not parse date:', timestamp);
+            return null;
+        }
+
+        function renderOrders() {
+            if (filteredOrders.length === 0) {
+                displayNoOrders();
+                return;
+            }
+
+            const tbody = ordersTableBody;
+            tbody.innerHTML = '';
+
+            filteredOrders.forEach(order => {
+                const row = document.createElement('tr');
+                row.onclick = () => viewOrderDetails(order.OrderNumber);
+                
+                // Get item count from order details
+                const itemCount = getItemCount(order.Order);
+                
+                // Parse and format the date
+                const formattedDate = formatDate(order.Timestamp);
+                
+                row.innerHTML = `
+                    <td>
+                        <span class="order-number">${order.OrderNumber || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="customer-name">${order.Name || 'N/A'}</div>
+                            <div class="customer-contact">${order.Email || 'N/A'}</div>
+                            <div class="customer-contact">${order.Phone || 'N/A'}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${(order.Status || 'unknown').toLowerCase()}">${order.Status || 'Unknown'}</span>
+                    </td>
+                    <td>
+                        <div>${formatDate(order.Time)}</div>
+                        <small style="color: #999;">(Raw: ${order.Time || 'No timestamp'})</small>
+                    </td>
+                    <td>
+                        <div class="order-actions">
+                            <button class="action-btn btn-view" onclick="event.stopPropagation(); viewOrderDetails('${order.OrderNumber}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+
+            orderCount.textContent = filteredOrders.length;
+        }
+
+        function getItemCount(orderString) {
+            if (!orderString || orderString === 'N/A' || orderString === '') return '0';
+            
+            // Simple counting method - count lines that contain item information
+            const lines = orderString.split('\n').filter(line => line.trim());
+            return lines.length.toString();
+        }
+
+        function formatDate(timestamp) {
+            console.log('Formatting timestamp:', timestamp, 'Type:', typeof timestamp);
+            
+            if (!timestamp || timestamp === '' || timestamp === 'N/A') {
+                return 'No Date';
+            }
+            
+            const parsedDate = parseOrderDate(timestamp);
+            
+            if (!parsedDate || isNaN(parsedDate.getTime())) {
+                return `Invalid Date (${timestamp})`;
+            }
+            
+            try {
+                return parsedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return `Format Error (${timestamp})`;
+            }
+        }
+
+        function viewOrderDetails(orderNumber) {
+            // Navigate to order details page with the order number
+            window.open(`order-details.html?order=${orderNumber}`, '_blank');
+        }
+
+        function displayNoOrders() {
+            ordersTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        <div class="no-orders">
+                            <i class="fas fa-inbox"></i>
+                            <h4>No orders found</h4>
+                            <p>No orders match your current filters.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            orderCount.textContent = '0';
+        }
+
+        function displayError(message) {
+            ordersTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        <div class="error-alert text-center" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${message}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // FIXED: Improved date filtering logic
+        function filterOrders() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+            
+            console.log('Filtering with:', { searchTerm, fromDate, toDate });
+            
+            filteredOrders = allOrders.filter(order => {
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    (order.OrderNumber || '').toLowerCase().includes(searchTerm) ||
+                    (order.Name || '').toLowerCase().includes(searchTerm) ||
+                    (order.Email || '').toLowerCase().includes(searchTerm) ||
+                    (order.Phone || '').toLowerCase().includes(searchTerm);
+                    
+                // Date filtering - ONLY filter if dates are actually set
+                let matchesDate = true;
+                
+                if (fromDate || toDate) {
+                    // Try both 'Time' and 'Timestamp' fields
+                    const timeField = order.Time || order.Timestamp;
+                    const orderDate = parseOrderDate(timeField);
+                    
+                    console.log('Order date check:', {
+                        orderNumber: order.OrderNumber,
+                        rawTime: timeField,
+                        parsedDate: orderDate,
+                        fromDate,
+                        toDate
+                    });
+                    
+                    if (orderDate && !isNaN(orderDate.getTime())) {
+                        // Create proper date boundaries
+                        let fromDateTime = null;
+                        let toDateTime = null;
+                        
+                        if (fromDate) {
+                            fromDateTime = new Date(fromDate);
+                            fromDateTime.setHours(0, 0, 0, 0); // Start of day
+                        }
+                        
+                        if (toDate) {
+                            toDateTime = new Date(toDate);
+                            toDateTime.setHours(23, 59, 59, 999); // End of day
+                        }
+                        
+                        // Apply date range filtering - FIXED LOGIC
+                        if (fromDateTime && toDateTime) {
+                            matchesDate = orderDate >= fromDateTime && orderDate <= toDateTime;
+                        } else if (fromDateTime) {
+                            matchesDate = orderDate >= fromDateTime;
+                        } else if (toDateTime) {
+                            matchesDate = orderDate <= toDateTime;
+                        }
+                        
+                        console.log('Date match result:', {
+                            orderDate: orderDate.toISOString(),
+                            fromDateTime: fromDateTime ? fromDateTime.toISOString() : null,
+                            toDateTime: toDateTime ? toDateTime.toISOString() : null,
+                            matchesDate
+                        });
+                    } else {
+                        // If date can't be parsed, exclude from results when date filter is active
+                        matchesDate = false;
+                        console.log('Date parsing failed for order:', order.OrderNumber, 'Raw time:', timeField, '- excluding from filtered results');
+                    }
+                } else {
+                    // No date filters set - include all orders
+                    matchesDate = true;
+                }
+
+                const finalMatch = matchesSearch && matchesDate;
+                console.log('Final filter result for', order.OrderNumber, ':', { matchesSearch, matchesDate, finalMatch });
+                
+                return finalMatch;
+            });
+
+            console.log('Filtered orders count:', filteredOrders.length);
+            renderOrders();
+        }
+
+        function clearDateFilters() {
+            fromDateInput.value = '';
+            toDateInput.value = '';
+            console.log('Date filters cleared');
+            filterOrders(); // Re-filter to show all orders
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', filterOrders);
+        fromDateInput.addEventListener('change', filterOrders);
+        toDateInput.addEventListener('change', filterOrders);
+        refreshBtn.addEventListener('click', () => {
+            showLoading();
+            fetchOrders();
+        });
+        clearDatesBtn.addEventListener('click', clearDateFilters);
+
+        // Initialize the application
+        gapi.load('client', initClient);
+    </script>
+</body>
+</html>
