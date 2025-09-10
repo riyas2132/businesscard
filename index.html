@@ -117,6 +117,20 @@
             color: var(--primary-color);
         }
         
+        .shopping-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: 2px solid var(--accent-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .shopping-btn:hover {
+            background-color: transparent;
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
         @media (max-width: 768px) {
             .page-heading {
                 font-size: 1.5rem;
@@ -139,12 +153,22 @@
             .footer .social-icons {
                 justify-content: center;
             }
+            
+            .shopping-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
         }
         
         @media (max-width: 576px) {
             .header-buttons .btn {
                 margin: 0 3px;
                 padding: 0.3rem 0.6rem;
+            }
+            
+            .shopping-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -161,16 +185,22 @@
         <nav class="navbar">
             <div class="container d-flex justify-content-between align-items-center">
                 <a class="navbar-brand" href="#" aria-label="Shop Name">Shop Name</a>
-                <div class="header-buttons d-flex align-items-center">
-                    <a href="tel:" id="callButton" class="btn btn-primary me-2" title="Call us">
-                        <i class="bi bi-telephone-fill"></i>
+                <div class="d-flex align-items-center">
+                    <a href="https://souqkin.com/shopping.html" class="btn shopping-btn me-3" title="Shop Now">
+                        <i class="bi bi-bag-fill me-1"></i>
+                        <span class="d-none d-sm-inline">Shop Now</span>
                     </a>
-                    <a href="https://wa.me/" id="whatsappButton" class="btn btn-success me-2" target="_blank" title="Chat on WhatsApp">
-                        <i class="bi bi-whatsapp"></i>
-                    </a>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=Facts+Computer+Software+House+LLC&origin=Facts+Computer+Software+House+LLC" id="glocation" class="btn btn-secondary" target="_blank" title="Location">
-                        <i class="bi bi-geo-alt-fill"></i>
-                    </a>
+                    <div class="header-buttons d-flex align-items-center">
+                        <a href="tel:" id="callButton" class="btn btn-primary me-2" title="Call us">
+                            <i class="bi bi-telephone-fill"></i>
+                        </a>
+                        <a href="https://wa.me/" id="whatsappButton" class="btn btn-success me-2" target="_blank" title="Chat on WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=Facts+Computer+Software+House+LLC&origin=Facts+Computer+Software+House+LLC" id="glocation" class="btn btn-secondary" target="_blank" title="Location">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </nav>
