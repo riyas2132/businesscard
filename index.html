@@ -131,6 +131,37 @@
             border-color: var(--accent-color);
         }
         
+        /* Order Now Button Styles */
+        .order-now-btn {
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .order-now-btn:hover {
+            background-color: #E85A2A;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.5);
+        }
+        
+        .order-now-btn i {
+            margin-right: 8px;
+        }
+        
+        .order-now-btn-sm {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
+        
         /* Hero Section with Image */
         .hero-section {
             position: relative;
@@ -198,6 +229,11 @@
             opacity: 0.95;
             line-height: 1.6;
             animation: fadeInUp 1s ease 0.2s both;
+            margin-bottom: 30px;
+        }
+        
+        .hero-cta {
+            animation: fadeInUp 1s ease 0.4s both;
         }
         
         .features-grid {
@@ -294,6 +330,10 @@
                 padding: 20px;
                 justify-content: center;
             }
+            
+            .order-now-btn {
+                padding: 10px 25px;
+            }
         }
         
         @media (max-width: 576px) {
@@ -323,6 +363,11 @@
             .feature-card {
                 padding: 20px;
             }
+            
+            .order-now-btn {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -342,7 +387,7 @@
                     <a href="https://souqkin.com/shopping.html" class="btn shopping-btn me-3" title="Shop Now">
                         <i class="bi bi-bag-fill me-1"></i>
                         <span>Shop</span>
-                    </a>
+                    </a> 
                     <div class="header-buttons d-flex align-items-center">
                         <a href="tel:" id="callButton" class="btn btn-primary me-2" title="Call us">
                             <i class="bi bi-telephone-fill"></i>
@@ -363,7 +408,7 @@
     <main class="container main-content flex-grow-1">
         <h2 class="page-heading">Welcome to Our Store</h2>
         
-        <!-- Hero Section with MainPageImage1 -->
+        <!-- Hero Section with Image -->
         <div class="hero-section">
             <div class="hero-image-container">
                 <img id="mainPageImage" class="hero-image" src="" alt="Main Page Feature Image" style="display: none;">
@@ -371,6 +416,12 @@
                     <div class="hero-content">
                         <h1 class="hero-title">Smart NFC & QR Solutions</h1>
                         <p class="hero-subtitle">Reimagine customer connections—one tap or scan opens instant access. Drive feedback, build trust, and simplify interactions.</p>
+                        <div class="hero-cta">
+                            <a href="https://souqkin.com/shopping.html" class="order-now-btn">
+                                <i class="bi bi-cart-check me-2"></i>
+                                Order Now
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
