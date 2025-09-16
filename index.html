@@ -408,14 +408,52 @@
     <main class="container main-content flex-grow-1">
         <h2 class="page-heading">Welcome to Our Store</h2>
         
-        <!-- Hero Section with Image -->
-        <div class="hero-section">
+        <!-- Hero Section 1 -->
+        <div class="hero-section" id="hero-section-1">
             <div class="hero-image-container">
-                <img id="mainPageImage" class="hero-image" src="" alt="Main Page Feature Image" style="display: none;">
+                <img id="mainPageImage1" class="hero-image" src="" alt="Main Page Feature Image" style="display: none;">
                 <div class="hero-overlay">
                     <div class="hero-content">
-                        <h1 class="hero-title">Smart NFC & QR Solutions</h1>
-                        <p class="hero-subtitle">Reimagine customer connections—one tap or scan opens instant access. Drive feedback, build trust, and simplify interactions.</p>
+                        <h1 class="hero-title" id="hero-title-1">Smart NFC & QR Solutions</h1>
+                        <p class="hero-subtitle" id="hero-description-1">Reimagine customer connections—one tap or scan opens instant access. Drive feedback, build trust, and simplify interactions.</p>
+                        <div class="hero-cta">
+                            <a href="https://souqkin.com/shopping.html" class="order-now-btn">
+                                <i class="bi bi-cart-check me-2"></i>
+                                Order Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hero Section 2 -->
+        <div class="hero-section" id="hero-section-2">
+            <div class="hero-image-container">
+                <img id="mainPageImage2" class="hero-image" src="" alt="Second Feature Image" style="display: none;">
+                <div class="hero-overlay">
+                    <div class="hero-content">
+                        <h1 class="hero-title" id="hero-title-2">Digital Business Cards</h1>
+                        <p class="hero-subtitle" id="hero-description-2">Modernize your networking with digital business cards that never run out and can be updated anytime.</p>
+                        <div class="hero-cta">
+                            <a href="https://souqkin.com/shopping.html" class="order-now-btn">
+                                <i class="bi bi-cart-check me-2"></i>
+                                Order Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hero Section 3 -->
+        <div class="hero-section" id="hero-section-3">
+            <div class="hero-image-container">
+                <img id="mainPageImage3" class="hero-image" src="" alt="Third Feature Image" style="display: none;">
+                <div class="hero-overlay">
+                    <div class="hero-content">
+                        <h1 class="hero-title" id="hero-title-3">Smart Menus & Catalogs</h1>
+                        <p class="hero-subtitle" id="hero-description-3">Transform your business with interactive digital menus and catalogs that engage customers.</p>
                         <div class="hero-cta">
                             <a href="https://souqkin.com/shopping.html" class="order-now-btn">
                                 <i class="bi bi-cart-check me-2"></i>
@@ -509,13 +547,45 @@
                 linkedin: 'https://www.linkedin.com',
                 location: ''
             },
-            mainPageImage: ''
+            heroSections: [
+                {
+                    image: '',
+                    title: 'Smart NFC & QR Solutions',
+                    description: 'Reimagine customer connections—one tap or scan opens instant access. Drive feedback, build trust, and simplify interactions.'
+                },
+                {
+                    image: '',
+                    title: 'Digital Business Cards',
+                    description: 'Modernize your networking with digital business cards that never run out and can be updated anytime.'
+                },
+                {
+                    image: '',
+                    title: 'Smart Menus & Catalogs',
+                    description: 'Transform your business with interactive digital menus and catalogs that engage customers.'
+                }
+            ]
         };
         
         // DOM Elements
         const elements = {
             loadingOverlay: document.getElementById('loading-overlay'),
-            mainPageImage: document.getElementById('mainPageImage')
+            heroSections: [
+                {
+                    image: document.getElementById('mainPageImage1'),
+                    title: document.getElementById('hero-title-1'),
+                    description: document.getElementById('hero-description-1')
+                },
+                {
+                    image: document.getElementById('mainPageImage2'),
+                    title: document.getElementById('hero-title-2'),
+                    description: document.getElementById('hero-description-2')
+                },
+                {
+                    image: document.getElementById('mainPageImage3'),
+                    title: document.getElementById('hero-title-3'),
+                    description: document.getElementById('hero-description-3')
+                }
+            ]
         };
         
         // Utility functions
@@ -583,7 +653,7 @@
                 
                 processSheetData(data);
                 updateShopInfo();
-                updateMainPageImage();
+                updateHeroSections();
                 hideLoading();
             }).catch(error => {
                 console.error('Error loading sheet data:', error);
@@ -627,7 +697,31 @@
                         state.shopInfo.linkedin = configValue;
                         break;
                     case 'MainPageImage1':
-                        state.mainPageImage = configValue;
+                        state.heroSections[0].image = configValue;
+                        break;
+                    case 'MainPageImage2':
+                        state.heroSections[1].image = configValue;
+                        break;
+                    case 'MainPageImage3':
+                        state.heroSections[2].image = configValue;
+                        break;
+                    case 'Title1':
+                        state.heroSections[0].title = configValue;
+                        break;
+                    case 'Title2':
+                        state.heroSections[1].title = configValue;
+                        break;
+                    case 'Title3':
+                        state.heroSections[2].title = configValue;
+                        break;
+                    case 'Description1':
+                        state.heroSections[0].description = configValue;
+                        break;
+                    case 'Description2':
+                        state.heroSections[1].description = configValue;
+                        break;
+                    case 'Description3':
+                        state.heroSections[2].description = configValue;
                         break;
                     case 'Colour':
                         const colors = configValue.split(',');
@@ -639,25 +733,41 @@
             }
         }
         
-        function updateMainPageImage() {
-            if (state.mainPageImage) {
-                elements.mainPageImage.src = state.mainPageImage;
-                elements.mainPageImage.style.display = 'block';
+        function updateHeroSections() {
+            for (let i = 0; i < state.heroSections.length; i++) {
+                const heroData = state.heroSections[i];
+                const heroElements = elements.heroSections[i];
                 
-                // Handle image load error
-                elements.mainPageImage.onerror = function() {
-                    console.warn('Failed to load main page image:', state.mainPageImage);
-                    this.style.display = 'none';
-                };
+                // Update image
+                if (heroData.image) {
+                    heroElements.image.src = heroData.image;
+                    heroElements.image.style.display = 'block';
+                    
+                    // Handle image load error
+                    heroElements.image.onerror = function() {
+                        console.warn('Failed to load hero image:', heroData.image);
+                        this.style.display = 'none';
+                    };
+                    
+                    // Smooth fade in when image loads
+                    heroElements.image.onload = function() {
+                        this.style.opacity = '0';
+                        this.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => {
+                            this.style.opacity = '1';
+                        }, 100);
+                    };
+                }
                 
-                // Smooth fade in when image loads
-                elements.mainPageImage.onload = function() {
-                    this.style.opacity = '0';
-                    this.style.transition = 'opacity 0.5s ease';
-                    setTimeout(() => {
-                        this.style.opacity = '1';
-                    }, 100);
-                };
+                // Update title
+                if (heroData.title) {
+                    heroElements.title.textContent = heroData.title;
+                }
+                
+                // Update description
+                if (heroData.description) {
+                    heroElements.description.textContent = heroData.description;
+                }
             }
         }
         
